@@ -38,12 +38,34 @@ export function PostEmbed({ embed }: { embed: unknown }) {
 
 function ImageGrid({ images }: { images: AppBskyEmbedImages.ViewImage[] }) {
   const openLightbox = useSetAtom(lightboxAtom);
+
+  // Single image: show it at its own aspect ratio (capped in height) instead of cropping.
+  if (images.length === 1) {
+    const img = images[0];
+    if (!img) return null;
+    const ratio = img.aspectRatio
+      ? `${img.aspectRatio.width} / ${img.aspectRatio.height}`
+      : "16 / 9";
+    return (
+      <button
+        type="button"
+        onClick={() => openLightbox(img.fullsize)}
+        className="block w-full cursor-zoom-in overflow-hidden rounded-xl border border-white"
+      >
+        <img
+          src={img.thumb}
+          alt={img.alt}
+          style={{ aspectRatio: ratio }}
+          className="max-h-[70vh] w-full bg-zinc-100 object-cover"
+          loading="lazy"
+        />
+      </button>
+    );
+  }
+
+  // Multiple images: uniform tiles in a 2-column grid.
   return (
-    <div
-      className={`grid gap-1 overflow-hidden rounded-xl border border-white ${
-        images.length > 1 ? "grid-cols-2" : "grid-cols-1"
-      }`}
-    >
+    <div className="grid grid-cols-2 gap-1 overflow-hidden rounded-xl border border-white">
       {images.map((img) => (
         <button
           key={img.thumb}
@@ -54,7 +76,7 @@ function ImageGrid({ images }: { images: AppBskyEmbedImages.ViewImage[] }) {
           <img
             src={img.thumb}
             alt={img.alt}
-            className="aspect-video size-full bg-zinc-100 object-cover"
+            className="aspect-square size-full bg-zinc-100 object-cover"
             loading="lazy"
           />
         </button>
