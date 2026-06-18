@@ -58,9 +58,7 @@ export function SearchPage() {
         </div>
       </div>
 
-      {q.trim().length === 0 ? (
-        <p className="py-12 text-center text-white/80">{t("search.prompt")}</p>
-      ) : isLoading ? (
+      {q.trim().length === 0 ? null : isLoading ? (
         <div className="grid place-items-center py-12">
           <Spinner />
         </div>

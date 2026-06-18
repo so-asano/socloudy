@@ -66,7 +66,6 @@ export const ja = {
     title: "検索",
     placeholder: "ユーザーを検索",
     empty: "該当するユーザーが見つかりませんでした。",
-    prompt: "ハンドルや名前で検索します。",
   },
   notifications: {
     title: "通知",

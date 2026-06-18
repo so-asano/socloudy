@@ -68,7 +68,6 @@ export const en: Resources = {
     title: "Search",
     placeholder: "Search people",
     empty: "No matching users found.",
-    prompt: "Search by handle or name.",
   },
   notifications: {
     title: "Notifications",
