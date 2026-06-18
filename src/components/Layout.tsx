@@ -250,6 +250,7 @@ export function Layout() {
 
       {/* Mobile bottom bar */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-2 backdrop-blur-xl sm:hidden">
+        <MobileLink to="/" end icon={Home} label={t("nav.home")} onClick={goHome} />
         <MobileLink to="/search" icon={Search} label={t("nav.search")} onClick={toTop} />
         <MobileLink
           to="/notifications"
