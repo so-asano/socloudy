@@ -109,7 +109,7 @@ export function Layout() {
               }`
             }
           >
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white/20">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white bg-white/20">
               <Home className="size-4" />
             </span>
             <span className="truncate">{t("nav.following")}</span>
@@ -126,9 +126,13 @@ export function Layout() {
               }
             >
               {f.avatar ? (
-                <img src={f.avatar} alt="" className="size-7 shrink-0 rounded-full" />
+                <img
+                  src={f.avatar}
+                  alt=""
+                  className="size-7 shrink-0 rounded-full border border-white"
+                />
               ) : (
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white/20">
+                <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white bg-white/20">
                   <Hash className="size-4" />
                 </span>
               )}
@@ -195,7 +199,7 @@ export function Layout() {
                 }`
               }
             >
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full border border-white bg-white/20">
                 <Home className="size-4" />
               </span>
               <span className="truncate">{t("nav.following")}</span>
@@ -212,9 +216,13 @@ export function Layout() {
                 }
               >
                 {f.avatar ? (
-                  <img src={f.avatar} alt="" className="size-8 shrink-0 rounded-full" />
+                  <img
+                    src={f.avatar}
+                    alt=""
+                    className="size-8 shrink-0 rounded-full border border-white"
+                  />
                 ) : (
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full border border-white bg-white/20">
                     <Hash className="size-4" />
                   </span>
                 )}
