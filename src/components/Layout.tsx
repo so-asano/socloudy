@@ -17,6 +17,7 @@ import {
   type LucideIcon,
   PenSquare,
   Search,
+  Settings,
   User,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
@@ -33,6 +34,7 @@ export function Layout() {
   const { data: feeds = [] } = useSavedFeeds();
   const qc = useQueryClient();
   const [feedsOpen, setFeedsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `grid size-12 place-items-center rounded-full transition ${
@@ -236,8 +238,23 @@ export function Layout() {
         </>
       ) : null}
 
-      {/* Floating post button (mobile) — hidden while the feeds menu is open */}
-      {feedsOpen ? null : (
+      {/* Mobile settings sheet (opened by the gear button below) */}
+      {settingsOpen ? (
+        <>
+          <button
+            type="button"
+            aria-label={t("common.close")}
+            onClick={() => setSettingsOpen(false)}
+            className="fixed inset-0 z-40 sm:hidden"
+          />
+          <div className="fixed inset-x-3 bottom-20 z-40 rounded-3xl border border-white/30 bg-sky/90 p-4 shadow-xl backdrop-blur-xl sm:hidden">
+            <SettingsControls />
+          </div>
+        </>
+      ) : null}
+
+      {/* Floating post button (mobile) — hidden while a sheet is open */}
+      {feedsOpen || settingsOpen ? null : (
         <button
           type="button"
           onClick={() => setComposer({ open: true })}
@@ -261,11 +278,25 @@ export function Layout() {
         />
         <button
           type="button"
-          onClick={() => setFeedsOpen((v) => !v)}
+          onClick={() => {
+            setSettingsOpen(false);
+            setFeedsOpen((v) => !v);
+          }}
           aria-label={t("nav.feeds")}
           className={`px-4 py-1 ${feedsOpen ? "text-sky" : ""}`}
         >
           <Hash className="size-6" />
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setFeedsOpen(false);
+            setSettingsOpen((v) => !v);
+          }}
+          aria-label={t("nav.settings")}
+          className={`px-4 py-1 ${settingsOpen ? "text-sky" : ""}`}
+        >
+          <Settings className="size-6" />
         </button>
         {me ? (
           <MobileLink to={`/profile/${me.handle}`} icon={User} label={t("nav.profile")} />

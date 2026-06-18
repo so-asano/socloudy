@@ -8,6 +8,7 @@ export const ja = {
     post: "投稿",
     feeds: "フィード",
     following: "フォロー中",
+    settings: "設定",
     logout: "ログアウト",
   },
   feeds: {

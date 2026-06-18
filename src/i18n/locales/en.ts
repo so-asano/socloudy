@@ -10,6 +10,7 @@ export const en: Resources = {
     post: "Post",
     feeds: "Feeds",
     following: "Following",
+    settings: "Settings",
     logout: "Log out",
   },
   feeds: {
