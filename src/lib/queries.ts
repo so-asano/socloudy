@@ -38,13 +38,16 @@ export function useTimelineLatest() {
   });
 }
 
-/** Posts from a custom feed generator. */
+/** Posts from a custom feed generator, or a user list when given a list URI. */
 export function useFeedPosts(feed: string) {
+  const isList = feed.includes("/app.bsky.graph.list/");
   return useInfiniteQuery({
     queryKey: ["feed", feed],
     initialPageParam: undefined as string | undefined,
     queryFn: async ({ pageParam }) => {
-      const res = await agent.app.bsky.feed.getFeed({ feed, limit: 30, cursor: pageParam });
+      const res = isList
+        ? await agent.app.bsky.feed.getListFeed({ list: feed, limit: 30, cursor: pageParam })
+        : await agent.app.bsky.feed.getFeed({ feed, limit: 30, cursor: pageParam });
       return res.data as FeedPage;
     },
     getNextPageParam: (last) => last.cursor,
@@ -52,26 +55,74 @@ export function useFeedPosts(feed: string) {
   });
 }
 
-export type SavedFeed = { uri: string; name: string; avatar?: string };
+export type SavedFeed = {
+  /** stable key from the saved-feeds preference */
+  key: string;
+  type: "feed" | "list" | "timeline";
+  /** feed/list AT-URI, or "following" for the home timeline */
+  uri: string;
+  /** display name; empty for the timeline (the UI localises it) */
+  name: string;
+  avatar?: string;
+};
 
-/** The user's pinned custom feeds (from preferences), resolved to name + avatar. */
+/**
+ * The user's pinned feeds/lists/timeline from preferences (savedFeedsPrefV2),
+ * kept in the saved order, resolved to name + avatar.
+ */
 export function useSavedFeeds() {
   return useQuery({
     queryKey: ["savedFeeds"],
     staleTime: 5 * 60_000,
     queryFn: async (): Promise<SavedFeed[]> => {
       const prefs = await agent.getPreferences();
-      const pinned = prefs.savedFeeds.filter((f) => f.pinned && f.type === "feed");
+      const pinned = prefs.savedFeeds.filter((f) => f.pinned);
       if (pinned.length === 0) return [];
-      const uris = pinned.map((f) => f.value);
-      const gens = await agent.app.bsky.feed.getFeedGenerators({ feeds: uris });
-      const byUri: Record<string, AppBskyFeedDefs.GeneratorView> = {};
-      for (const g of gens.data.feeds) byUri[g.uri] = g;
-      return pinned.map((f) => ({
-        uri: f.value,
-        name: byUri[f.value]?.displayName ?? "Feed",
-        avatar: byUri[f.value]?.avatar,
-      }));
+
+      // resolve feed-generator names/avatars in one batch
+      const feedUris = pinned.filter((f) => f.type === "feed").map((f) => f.value);
+      const feedByUri: Record<string, AppBskyFeedDefs.GeneratorView> = {};
+      if (feedUris.length > 0) {
+        const gens = await agent.app.bsky.feed.getFeedGenerators({ feeds: feedUris });
+        for (const g of gens.data.feeds) feedByUri[g.uri] = g;
+      }
+
+      // resolve list names/avatars (one call each — usually only a handful)
+      const listByUri: Record<string, { name: string; avatar?: string }> = {};
+      await Promise.all(
+        pinned
+          .filter((f) => f.type === "list")
+          .map(async (f) => {
+            try {
+              const res = await agent.app.bsky.graph.getList({ list: f.value, limit: 1 });
+              listByUri[f.value] = { name: res.data.list.name, avatar: res.data.list.avatar };
+            } catch {
+              // list may be deleted/unavailable — skip metadata
+            }
+          }),
+      );
+
+      return pinned.map((f): SavedFeed => {
+        if (f.type === "timeline") {
+          return { key: f.id, type: "timeline", uri: "following", name: "" };
+        }
+        if (f.type === "list") {
+          return {
+            key: f.id,
+            type: "list",
+            uri: f.value,
+            name: listByUri[f.value]?.name ?? "List",
+            avatar: listByUri[f.value]?.avatar,
+          };
+        }
+        return {
+          key: f.id,
+          type: "feed",
+          uri: f.value,
+          name: feedByUri[f.value]?.displayName ?? "Feed",
+          avatar: feedByUri[f.value]?.avatar,
+        };
+      });
     },
   });
 }

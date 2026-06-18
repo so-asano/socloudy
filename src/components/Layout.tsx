@@ -5,17 +5,18 @@ import { Composer } from "@/components/Composer";
 import { Lightbox } from "@/components/Lightbox";
 import { SettingsControls } from "@/components/SettingsControls";
 import { useAuthActions } from "@/lib/auth";
-import { useSavedFeeds, useUnreadCount } from "@/lib/queries";
+import { type SavedFeed, useSavedFeeds, useUnreadCount } from "@/lib/queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   Bell,
   Cloud,
-  Hash,
   Home,
+  List,
   LogOut,
   type LucideIcon,
   PenSquare,
+  Rss,
   Search,
   Settings,
   User,
@@ -99,49 +100,33 @@ export function Layout() {
           {/* profile is reachable from the user avatar at the bottom */}
         </nav>
 
-        {/* "Following" home timeline, then the pinned custom feeds */}
+        {/* pinned feeds/lists/timeline in their saved order */}
         <nav className="feed-list my-6 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-8">
-          <NavLink
-            to="/"
-            end
-            title={t("nav.following")}
-            onClick={goHome}
-            className={({ isActive }) =>
-              `flex items-center gap-2 rounded-full py-2 pr-3 pl-1.5 text-sm transition ${
-                isActive ? "bg-white text-sky" : "hover:bg-white/25"
-              }`
-            }
-          >
-            <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white bg-white/20">
-              <Home className="size-4" />
-            </span>
-            <span className="truncate">{t("nav.following")}</span>
-          </NavLink>
-          {feeds.map((f) => (
-            <NavLink
-              key={f.uri}
-              to={`/feed/${encodeURIComponent(f.uri)}`}
-              title={f.name}
-              className={({ isActive }) =>
-                `flex items-center gap-2 rounded-full py-2 pr-3 pl-1.5 text-sm transition ${
-                  isActive ? "bg-white text-sky" : "hover:bg-white/25"
-                }`
-              }
-            >
-              {f.avatar ? (
-                <img
-                  src={f.avatar}
-                  alt=""
-                  className="size-7 shrink-0 rounded-full border border-white"
-                />
-              ) : (
-                <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white bg-white/20">
-                  <Hash className="size-4" />
-                </span>
-              )}
-              <span className="truncate">{f.name}</span>
-            </NavLink>
-          ))}
+          {feeds.map((f) =>
+            f.type === "timeline" ? (
+              <NavLink
+                key={f.key}
+                to="/"
+                end
+                title={t("nav.following")}
+                onClick={goHome}
+                className={feedRowClass}
+              >
+                <FeedIcon feed={f} className="size-7" />
+                <span className="truncate">{t("nav.following")}</span>
+              </NavLink>
+            ) : (
+              <NavLink
+                key={f.key}
+                to={`/feed/${encodeURIComponent(f.uri)}`}
+                title={f.name}
+                className={feedRowClass}
+              >
+                <FeedIcon feed={f} className="size-7" />
+                <span className="truncate">{f.name}</span>
+              </NavLink>
+            ),
+          )}
         </nav>
 
         <div className="mt-auto flex flex-col gap-2">
@@ -192,49 +177,33 @@ export function Layout() {
             className="fixed inset-0 z-40 sm:hidden"
           />
           <div className="fixed inset-x-3 bottom-20 z-40 max-h-[55vh] overflow-y-auto rounded-3xl border border-white/30 bg-sky/90 p-2 shadow-xl backdrop-blur-xl sm:hidden">
-            <NavLink
-              to="/"
-              end
-              onClick={() => {
-                setFeedsOpen(false);
-                goHome();
-              }}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-2xl px-2 py-2 text-sm transition ${
-                  isActive ? "bg-white text-sky" : "text-white"
-                }`
-              }
-            >
-              <span className="grid size-8 shrink-0 place-items-center rounded-full border border-white bg-white/20">
-                <Home className="size-4" />
-              </span>
-              <span className="truncate">{t("nav.following")}</span>
-            </NavLink>
-            {feeds.map((f) => (
-              <NavLink
-                key={f.uri}
-                to={`/feed/${encodeURIComponent(f.uri)}`}
-                onClick={() => setFeedsOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-2xl px-2 py-2 text-sm transition ${
-                    isActive ? "bg-white text-sky" : "text-white"
-                  }`
-                }
-              >
-                {f.avatar ? (
-                  <img
-                    src={f.avatar}
-                    alt=""
-                    className="size-8 shrink-0 rounded-full border border-white"
-                  />
-                ) : (
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full border border-white bg-white/20">
-                    <Hash className="size-4" />
-                  </span>
-                )}
-                <span className="truncate">{f.name}</span>
-              </NavLink>
-            ))}
+            {feeds.map((f) =>
+              f.type === "timeline" ? (
+                <NavLink
+                  key={f.key}
+                  to="/"
+                  end
+                  onClick={() => {
+                    setFeedsOpen(false);
+                    goHome();
+                  }}
+                  className={feedSheetRowClass}
+                >
+                  <FeedIcon feed={f} className="size-8" />
+                  <span className="truncate">{t("nav.following")}</span>
+                </NavLink>
+              ) : (
+                <NavLink
+                  key={f.key}
+                  to={`/feed/${encodeURIComponent(f.uri)}`}
+                  onClick={() => setFeedsOpen(false)}
+                  className={feedSheetRowClass}
+                >
+                  <FeedIcon feed={f} className="size-8" />
+                  <span className="truncate">{f.name}</span>
+                </NavLink>
+              ),
+            )}
           </div>
         </>
       ) : null}
@@ -317,7 +286,7 @@ export function Layout() {
             feedsOpen || onFeed ? "bg-white text-sky" : "text-white"
           }`}
         >
-          <Hash className="size-6" />
+          <List className="size-6" />
         </button>
         {me ? (
           <MobileLink
@@ -340,6 +309,44 @@ function Badge({ count }: { count: number }) {
   return (
     <span className="-top-1.5 -right-2 absolute grid h-[18px] min-w-[18px] place-items-center rounded-full bg-white px-1 font-bold text-[10px] text-sky-dark shadow-sm ring-2 ring-sky">
       {count > 99 ? "99+" : count}
+    </span>
+  );
+}
+
+// Row styles for the saved-feeds list (sidebar) and the mobile feeds sheet.
+const feedRowClass = ({ isActive }: { isActive: boolean }) =>
+  `flex items-center gap-2 rounded-full py-2 pr-3 pl-1.5 text-sm transition ${
+    isActive ? "bg-white text-sky" : "hover:bg-white/25"
+  }`;
+
+const feedSheetRowClass = ({ isActive }: { isActive: boolean }) =>
+  `flex items-center gap-3 rounded-2xl px-2 py-2 text-sm transition ${
+    isActive ? "bg-white text-sky" : "text-white"
+  }`;
+
+const FALLBACK_ICON: Record<SavedFeed["type"], LucideIcon> = {
+  timeline: Home,
+  list: List,
+  feed: Rss,
+};
+
+/** Avatar (white-bordered) for a saved feed/list, or a per-type fallback icon. */
+function FeedIcon({ feed, className }: { feed: SavedFeed; className: string }) {
+  if (feed.avatar) {
+    return (
+      <img
+        src={feed.avatar}
+        alt=""
+        className={`${className} shrink-0 rounded-full border border-white`}
+      />
+    );
+  }
+  const Icon = FALLBACK_ICON[feed.type];
+  return (
+    <span
+      className={`${className} grid shrink-0 place-items-center rounded-full border border-white bg-white/20`}
+    >
+      <Icon className="size-4" />
     </span>
   );
 }
