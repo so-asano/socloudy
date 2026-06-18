@@ -74,6 +74,8 @@ export function NotificationsPage() {
   const hasNew = markRead.isSuccess && unread > 0;
   const loadNew = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+    // clear the dot immediately, then refresh and persist the seen marker
+    qc.setQueryData(["unreadCount"], 0);
     qc.invalidateQueries({ queryKey: ["notifications"] });
     markRead.mutate(new Date().toISOString());
   };
