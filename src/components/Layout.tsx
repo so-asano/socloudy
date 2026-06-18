@@ -171,8 +171,11 @@ export function Layout() {
         </div>
       </header>
 
-      {/* Main column — own stacking context so card z-indexes don't escape to the sidebar */}
-      <main className="relative isolate min-w-0 flex-1 pb-16 sm:pb-0">
+      {/* Main column — own stacking context so card z-indexes don't escape to the sidebar.
+          On mobile, overflow-x-clip keeps the scaled/drifting clouds from overflowing the
+          viewport width (without making this a vertical scroll container); desktop is free
+          to overflow. */}
+      <main className="relative isolate min-w-0 max-w-full flex-1 overflow-x-clip pb-16 sm:overflow-x-visible sm:pb-0">
         <Outlet />
       </main>
 
