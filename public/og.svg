@@ -6,10 +6,6 @@
       </linearGradient>
     </defs>
     <rect width="1200" height="630" fill="url(#sky)" />
-    <g fill="#ffffff" opacity="0.85">
-      <path transform="translate(80 57.5) scale(5)" d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-      <path transform="translate(1000 457.5) scale(5)" d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-    </g>
     <path transform="translate(492 147) scale(9)"
       d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"
       fill="none" stroke="#ffffff" stroke-width="8" vector-effect="non-scaling-stroke"
