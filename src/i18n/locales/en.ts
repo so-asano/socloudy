@@ -8,7 +8,11 @@ export const en: Resources = {
     notifications: "Notifications",
     profile: "Profile",
     post: "Post",
+    feeds: "Feeds",
     logout: "Log out",
+  },
+  feeds: {
+    empty: "No pinned feeds.",
   },
   login: {
     title: "Log in",
@@ -85,5 +89,6 @@ export const en: Resources = {
     retry: "Retry",
     error: "Something went wrong.",
     language: "Language",
+    close: "Close",
   },
 };

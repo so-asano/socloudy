@@ -1,12 +1,11 @@
 import { sessionAtom } from "@/atoms/auth";
 import { composerAtom } from "@/atoms/composer";
-import { homeTopAtom } from "@/atoms/feed";
 import { Avatar } from "@/components/Avatar";
 import { Composer } from "@/components/Composer";
 import { Lightbox } from "@/components/Lightbox";
 import { SettingsControls } from "@/components/SettingsControls";
 import { useAuthActions } from "@/lib/auth";
-import { useSavedFeeds, useTimelineLatest, useUnreadCount } from "@/lib/queries";
+import { useSavedFeeds, useUnreadCount } from "@/lib/queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
@@ -20,7 +19,7 @@ import {
   Search,
   User,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
@@ -32,10 +31,8 @@ export function Layout() {
   const navigate = useNavigate();
   const { data: unread = 0 } = useUnreadCount();
   const { data: feeds = [] } = useSavedFeeds();
-  const { data: latestTop } = useTimelineLatest();
-  const homeTop = useAtomValue(homeTopAtom);
-  const hasNewHome = !!latestTop && !!homeTop && latestTop !== homeTop;
   const qc = useQueryClient();
+  const [feedsOpen, setFeedsOpen] = useState(false);
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `grid size-12 place-items-center rounded-full transition ${
@@ -73,12 +70,7 @@ export function Layout() {
             title={t("nav.home")}
             onClick={goHome}
           >
-            <span className="relative">
-              <Home className="size-6" />
-              {hasNewHome ? (
-                <span className="-top-0.5 -right-1 absolute size-2.5 rounded-full bg-white ring-2 ring-sky" />
-              ) : null}
-            </span>
+            <Home className="size-6" />
           </NavLink>
           <NavLink
             to="/search"
@@ -175,6 +167,55 @@ export function Layout() {
         <Outlet />
       </main>
 
+      {/* Mobile feeds menu (opened by the # button below) */}
+      {feedsOpen ? (
+        <>
+          <button
+            type="button"
+            aria-label={t("common.close")}
+            onClick={() => setFeedsOpen(false)}
+            className="fixed inset-0 z-40 sm:hidden"
+          />
+          <div className="fixed inset-x-3 bottom-20 z-40 max-h-[55vh] overflow-y-auto rounded-3xl border border-white/30 bg-sky/90 p-2 shadow-xl backdrop-blur-xl sm:hidden">
+            {feeds.length === 0 ? (
+              <p className="px-3 py-4 text-center text-sm text-white/80">{t("feeds.empty")}</p>
+            ) : (
+              feeds.map((f) => (
+                <NavLink
+                  key={f.uri}
+                  to={`/feed/${encodeURIComponent(f.uri)}`}
+                  onClick={() => setFeedsOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 rounded-2xl px-2 py-2 text-sm transition ${
+                      isActive ? "bg-white text-sky" : "text-white"
+                    }`
+                  }
+                >
+                  {f.avatar ? (
+                    <img src={f.avatar} alt="" className="size-8 shrink-0 rounded-full" />
+                  ) : (
+                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20">
+                      <Hash className="size-4" />
+                    </span>
+                  )}
+                  <span className="truncate">{f.name}</span>
+                </NavLink>
+              ))
+            )}
+          </div>
+        </>
+      ) : null}
+
+      {/* Floating post button (mobile) */}
+      <button
+        type="button"
+        onClick={() => setComposer({ open: true })}
+        aria-label={t("nav.post")}
+        className="fixed right-4 bottom-20 z-40 grid size-14 place-items-center rounded-full bg-sky text-white shadow-lg shadow-sky/40 transition active:scale-95 sm:hidden"
+      >
+        <PenSquare className="size-6" />
+      </button>
+
       {/* Mobile bottom bar */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-2 backdrop-blur-xl sm:hidden">
         <MobileLink to="/" end icon={Home} label={t("nav.home")} onClick={goHome} />
@@ -188,11 +229,11 @@ export function Layout() {
         />
         <button
           type="button"
-          onClick={() => setComposer({ open: true })}
-          aria-label={t("nav.post")}
-          className="px-4 py-1"
+          onClick={() => setFeedsOpen((v) => !v)}
+          aria-label={t("nav.feeds")}
+          className={`px-4 py-1 ${feedsOpen ? "text-sky" : ""}`}
         >
-          <PenSquare className="size-6" />
+          <Hash className="size-6" />
         </button>
         {me ? (
           <MobileLink to={`/profile/${me.handle}`} icon={User} label={t("nav.profile")} />

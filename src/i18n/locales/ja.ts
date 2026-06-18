@@ -6,7 +6,11 @@ export const ja = {
     notifications: "通知",
     profile: "プロフィール",
     post: "投稿",
+    feeds: "フィード",
     logout: "ログアウト",
+  },
+  feeds: {
+    empty: "ピンどめしたフィードがありません。",
   },
   login: {
     title: "ログイン",
@@ -83,6 +87,7 @@ export const ja = {
     retry: "再試行",
     error: "エラーが発生しました。",
     language: "言語",
+    close: "閉じる",
   },
 };
 
