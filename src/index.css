@@ -176,10 +176,14 @@ summary {
   --fill: #eaf4ff;
 }
 
-/* Feed stacking: cards overlap by a fixed amount (no per-frame layout = no flicker) so
-   many posts pile up like cover art. The centred card is raised via z-index in JS. */
+/* Feed stacking: a fixed gap between clouds (no per-frame layout = no flicker). The
+   centred card is raised via z-index in JS. Compact (notification) clouds are shorter,
+   so they get a larger gap to avoid looking cramped. */
 .cloud-stack > .cloud-card {
-  margin-top: -1.5rem;
+  margin-top: 1.5rem;
+}
+.cloud-stack > .cloud-card.is-compact {
+  margin-top: 3.5rem;
 }
 .cloud-stack > .cloud-card:first-child {
   margin-top: 0;
