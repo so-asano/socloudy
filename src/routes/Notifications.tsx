@@ -72,7 +72,7 @@ export function NotificationsPage() {
       ) : items.length === 0 ? (
         <p className="py-16 text-center text-zinc-500">{t("notifications.empty")}</p>
       ) : (
-        <div className="cloud-stack p-4 pt-8 sm:px-6">
+        <div className="cloud-stack px-4 pt-[36vh] pb-[40vh] sm:px-6">
           {items.map((n) => (
             <NotificationRow
               key={`${n.uri}:${n.reason}`}
