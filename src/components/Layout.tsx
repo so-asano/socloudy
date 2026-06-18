@@ -54,7 +54,7 @@ export function Layout() {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-5xl">
+    <div className="flex min-h-dvh">
       {/* Sidebar */}
       <header className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-2 p-4 sm:flex">
         <div className="mb-2 flex items-center gap-2 px-3 font-bold text-2xl">
