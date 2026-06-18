@@ -107,14 +107,14 @@ export function Layout() {
 
         {/* pinned custom feeds */}
         {feeds.length > 0 ? (
-          <nav className="mt-3 flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto">
+          <nav className="my-12 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-3">
             {feeds.map((f) => (
               <NavLink
                 key={f.uri}
                 to={`/feed/${encodeURIComponent(f.uri)}`}
                 title={f.name}
                 className={({ isActive }) =>
-                  `flex items-center gap-2 rounded-full py-1.5 pr-3 pl-1.5 text-sm transition ${
+                  `flex items-center gap-2 rounded-full py-2 pr-3 pl-1.5 text-sm transition ${
                     isActive ? "bg-white text-sky" : "hover:bg-white/25"
                   }`
                 }
