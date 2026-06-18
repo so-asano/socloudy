@@ -47,7 +47,7 @@ export function LoginPage() {
         <div className="flex flex-col items-center gap-2 text-center">
           <img src="/cloud.svg" alt="" className="size-12" />
           <h1 className="font-bold text-2xl">{t("login.title")}</h1>
-          <p className="text-sm text-zinc-500">{t("login.subtitle")}</p>
+          <p className="text-sm text-white/80">{t("login.subtitle")}</p>
         </div>
 
         <Field label={t("login.service")}>
@@ -100,7 +100,7 @@ export function LoginPage() {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-white bg-transparent px-4 py-2.5 outline-none focus:border-sky dark:border-white";
+  "w-full rounded-xl border border-white bg-white/10 px-4 py-2.5 text-white outline-none placeholder:text-white/50 focus:bg-white/20";
 
 function Field({
   label,
@@ -115,7 +115,7 @@ function Field({
     <label className="block space-y-1.5">
       <span className="font-medium text-sm">{label}</span>
       {children}
-      {hint ? <span className="block text-xs text-zinc-500">{hint}</span> : null}
+      {hint ? <span className="block text-white/70 text-xs">{hint}</span> : null}
     </label>
   );
 }
