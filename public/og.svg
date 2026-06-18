@@ -6,15 +6,13 @@
       </linearGradient>
     </defs>
     <rect width="1200" height="630" fill="url(#sky)" />
-    <!-- simple lucide clouds (same shape as the logo), filled, top-left & bottom-right -->
     <g fill="#ffffff" opacity="0.85">
       <path transform="translate(80 57.5) scale(5)" d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
       <path transform="translate(1000 457.5) scale(5)" d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
     </g>
-    <!-- cloud mark (outline) centred above the text -->
     <path transform="translate(492 147) scale(9)"
       d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"
-      fill="none" stroke="#ffffff" stroke-width="4" vector-effect="non-scaling-stroke"
+      fill="none" stroke="#ffffff" stroke-width="8" vector-effect="non-scaling-stroke"
       stroke-linecap="round" stroke-linejoin="round" />
     <text x="600" y="430" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif"
       font-size="84" font-weight="800" fill="#ffffff">socloudy</text>
