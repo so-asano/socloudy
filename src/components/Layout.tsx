@@ -30,6 +30,9 @@ export function Layout() {
     navigate("/login", { replace: true });
   };
 
+  // clicking a nav item scrolls back to the top (e.g. re-tapping the current tab)
+  const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
   return (
     <div className="mx-auto flex min-h-dvh max-w-5xl">
       {/* Sidebar */}
@@ -38,8 +41,15 @@ export function Layout() {
           <Cloud className="size-7 text-white" fill="none" />
           {t("app.name")}
         </div>
-        <nav className="flex flex-col gap-1">
-          <NavLink to="/" end className={navClass} aria-label={t("nav.home")} title={t("nav.home")}>
+        <nav className="flex flex-row gap-1">
+          <NavLink
+            to="/"
+            end
+            className={navClass}
+            aria-label={t("nav.home")}
+            title={t("nav.home")}
+            onClick={toTop}
+          >
             <Home className="size-6" />
           </NavLink>
           <NavLink
@@ -47,6 +57,7 @@ export function Layout() {
             className={navClass}
             aria-label={t("nav.search")}
             title={t("nav.search")}
+            onClick={toTop}
           >
             <Search className="size-6" />
           </NavLink>
@@ -55,6 +66,7 @@ export function Layout() {
             className={navClass}
             aria-label={t("nav.notifications")}
             title={t("nav.notifications")}
+            onClick={toTop}
           >
             <span className="relative">
               <Bell className="size-6" />
@@ -110,9 +122,15 @@ export function Layout() {
 
       {/* Mobile bottom bar */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-2 backdrop-blur-xl sm:hidden">
-        <MobileLink to="/" end icon={Home} label={t("nav.home")} />
-        <MobileLink to="/search" icon={Search} label={t("nav.search")} />
-        <MobileLink to="/notifications" icon={Bell} label={t("nav.notifications")} badge={unread} />
+        <MobileLink to="/" end icon={Home} label={t("nav.home")} onClick={toTop} />
+        <MobileLink to="/search" icon={Search} label={t("nav.search")} onClick={toTop} />
+        <MobileLink
+          to="/notifications"
+          icon={Bell}
+          label={t("nav.notifications")}
+          badge={unread}
+          onClick={toTop}
+        />
         <button
           type="button"
           onClick={() => setComposer({ open: true })}
@@ -135,7 +153,7 @@ export function Layout() {
 function Badge({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <span className="-top-1 -right-1.5 absolute grid min-w-4 place-items-center rounded-full bg-sky px-1 font-bold text-[10px] text-white">
+    <span className="-top-1.5 -right-2 absolute grid h-[18px] min-w-[18px] place-items-center rounded-full bg-white px-1 font-bold text-[10px] text-sky-dark shadow-sm ring-2 ring-sky">
       {count > 99 ? "99+" : count}
     </span>
   );
@@ -147,18 +165,21 @@ function MobileLink({
   label,
   end,
   badge = 0,
+  onClick,
 }: {
   to: string;
   icon: LucideIcon;
   label: string;
   end?: boolean;
   badge?: number;
+  onClick?: () => void;
 }): ReactNode {
   return (
     <NavLink
       to={to}
       end={end}
       aria-label={label}
+      onClick={onClick}
       className={({ isActive }) => `relative px-4 py-1 ${isActive ? "text-sky" : ""}`}
     >
       <Icon className="size-6" />
