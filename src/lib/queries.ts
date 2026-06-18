@@ -188,6 +188,46 @@ function patchCachedPost(
       patchInfinite(data, uri, patch),
     );
   }
+  // thread queries have a recursive ThreadViewPost shape, not a feed page
+  qc.setQueriesData({ queryKey: ["thread"] }, (data) => patchThreadNode(data, uri, patch));
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: ThreadViewPost is a recursive union; walk it loosely.
+function patchThreadNode(node: any, uri: string, patch: (p: PostView) => void): any {
+  if (!node || typeof node !== "object") return node;
+  let changed = false;
+
+  let post = node.post as PostView | undefined;
+  if (post && post.uri === uri) {
+    post = structuredClone(post);
+    patch(post);
+    changed = true;
+  }
+
+  let parent = node.parent;
+  if (parent) {
+    const next = patchThreadNode(parent, uri, patch);
+    if (next !== parent) {
+      parent = next;
+      changed = true;
+    }
+  }
+
+  let replies = node.replies;
+  if (Array.isArray(replies)) {
+    let repliesChanged = false;
+    const next = replies.map((r: unknown) => {
+      const x = patchThreadNode(r, uri, patch);
+      if (x !== r) repliesChanged = true;
+      return x;
+    });
+    if (repliesChanged) {
+      replies = next;
+      changed = true;
+    }
+  }
+
+  return changed ? { ...node, post, parent, replies } : node;
 }
 
 function patchInfinite(
