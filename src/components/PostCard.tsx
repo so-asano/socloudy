@@ -35,8 +35,8 @@ export function PostCard({
   const author = post.author;
   const seed = cloudSeed(post.cid);
 
-  // Scroll-linked motion (disabled for the focused thread post, which should stay put).
-  const ref = useCloudMotion<HTMLElement>(seed, !focused);
+  // Scroll-linked coverflow motion; `focused` only drives emphasis styling below.
+  const ref = useCloudMotion<HTMLElement>(seed);
   // Scale the font to the post length: short posts get big, airy text; long posts
   // shrink so the cloud stays a reasonable size.
   const len = record.text.length;

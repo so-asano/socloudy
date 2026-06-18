@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
 type ThreadPost = AppBskyFeedDefs.ThreadViewPost;
+type Row = { post: AppBskyFeedDefs.PostView; focused: boolean };
 
 export function ThreadPage() {
   const { t } = useTranslation();
@@ -35,8 +36,11 @@ export function ThreadPage() {
           <Spinner />
         </div>
       ) : thread && AppBskyFeedDefs.isThreadViewPost(thread) ? (
-        <div className="space-y-10 p-4 pt-8 sm:px-6">
-          <ThreadView node={thread} focused />
+        // flattened into one stack so each post gets the same coverflow scroll as the feed
+        <div className="cloud-stack px-4 pt-[36vh] pb-[40vh] sm:px-6">
+          {flattenThread(thread).map((row) => (
+            <PostCard key={row.post.uri} post={row.post} focused={row.focused} />
+          ))}
         </div>
       ) : (
         <p className="py-16 text-center text-zinc-500">{t("thread.notFound")}</p>
@@ -45,18 +49,23 @@ export function ThreadPage() {
   );
 }
 
-function ThreadView({ node, focused = false }: { node: ThreadPost; focused?: boolean }) {
-  const parent = node.parent && AppBskyFeedDefs.isThreadViewPost(node.parent) ? node.parent : null;
-  const replies = (node.replies ?? []).filter(AppBskyFeedDefs.isThreadViewPost);
+/** Ancestors (oldest → immediate parent), then the focused post, then replies depth-first. */
+function flattenThread(node: ThreadPost): Row[] {
+  const ancestors: Row[] = [];
+  let parent = node.parent;
+  while (parent && AppBskyFeedDefs.isThreadViewPost(parent)) {
+    ancestors.unshift({ post: parent.post, focused: false });
+    parent = parent.parent;
+  }
+  return [...ancestors, { post: node.post, focused: true }, ...flattenReplies(node)];
+}
 
-  return (
-    <div className="space-y-10">
-      {parent ? <ThreadView node={parent} /> : null}
-      <PostCard post={node.post} focused={focused} />
-      {/* focused styling handled inside PostCard via the cloud-card--focused class */}
-      {replies.map((reply) => (
-        <ThreadView key={reply.post.uri} node={reply} />
-      ))}
-    </div>
-  );
+function flattenReplies(node: ThreadPost): Row[] {
+  const rows: Row[] = [];
+  for (const reply of node.replies ?? []) {
+    if (!AppBskyFeedDefs.isThreadViewPost(reply)) continue;
+    rows.push({ post: reply.post, focused: false });
+    rows.push(...flattenReplies(reply));
+  }
+  return rows;
 }
