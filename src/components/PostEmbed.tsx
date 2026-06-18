@@ -69,7 +69,7 @@ function ExternalCard({ external }: { external: AppBskyEmbedExternal.ViewExterna
       href={external.uri}
       target="_blank"
       rel="noreferrer noopener"
-      className="block overflow-hidden rounded-xl border border-white transition hover:bg-zinc-50 dark:border-white dark:hover:bg-zinc-900"
+      className="block overflow-hidden rounded-xl bg-black/[0.06] transition hover:bg-black/[0.1] dark:bg-white/10 dark:hover:bg-white/[0.16]"
     >
       {external.thumb ? (
         <img src={external.thumb} alt="" className="aspect-video w-full object-cover" />
