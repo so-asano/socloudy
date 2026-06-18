@@ -9,14 +9,12 @@ import { useAuthorFeed, useProfile, useToggleFollow } from "@/lib/queries";
 import { cloudSeed } from "@/lib/util";
 import type { AppBskyActorDefs } from "@atproto/api";
 import { useAtomValue } from "jotai";
-import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export function ProfilePage() {
   const { t } = useTranslation();
   const { actor = "" } = useParams();
-  const navigate = useNavigate();
   const me = useAtomValue(sessionAtom);
   const { data: profile, isLoading } = useProfile(actor);
   const feed = useAuthorFeed(actor);
@@ -24,16 +22,7 @@ export function ProfilePage() {
 
   return (
     <>
-      <PageHeader title={profile?.displayName ?? profile?.handle ?? t("nav.profile")}>
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="back"
-          className="grid size-8 place-items-center rounded-full transition hover:bg-white/25"
-        >
-          <ArrowLeft className="size-5" />
-        </button>
-      </PageHeader>
+      <PageHeader title={profile?.displayName ?? profile?.handle ?? t("nav.profile")} />
 
       {isLoading ? (
         <div className="grid place-items-center py-16">
