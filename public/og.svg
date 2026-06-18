@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f8bea" />
+      <stop offset="1" stop-color="#0b51c4" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#sky)" />
+  <!-- soft drifting clouds -->
+  <g fill="#ffffff" opacity="0.85">
+    <ellipse cx="250" cy="140" rx="120" ry="40" />
+    <ellipse cx="330" cy="126" rx="86" ry="46" />
+    <ellipse cx="960" cy="500" rx="140" ry="44" />
+    <ellipse cx="880" cy="514" rx="98" ry="38" />
+  </g>
+  <!-- wordmark cloud (outline, matching the in-app logo) -->
+  <path
+    transform="translate(476 196) scale(11)"
+    d="M6.5 19A4.5 4.5 0 0 1 6 10.03 6 6 0 0 1 17.7 8.5h.3a4 4 0 0 1 .5 7.97V19H6.5Z"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="1.4"
+    stroke-linejoin="round"
+  />
+  <text x="600" y="430" text-anchor="middle" font-family="system-ui, sans-serif"
+    font-size="80" font-weight="800" fill="#ffffff">socloudy</text>
+  <text x="600" y="488" text-anchor="middle" font-family="system-ui, sans-serif"
+    font-size="32" fill="#ffffff" opacity="0.9">A cloudy Bluesky client</text>
+</svg>
