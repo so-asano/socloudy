@@ -206,15 +206,17 @@ export function Layout() {
         </>
       ) : null}
 
-      {/* Floating post button (mobile) */}
-      <button
-        type="button"
-        onClick={() => setComposer({ open: true })}
-        aria-label={t("nav.post")}
-        className="fixed right-4 bottom-20 z-40 grid size-14 place-items-center rounded-full bg-sky text-white shadow-lg shadow-sky/40 transition active:scale-95 sm:hidden"
-      >
-        <PenSquare className="size-6" />
-      </button>
+      {/* Floating post button (mobile) — hidden while the feeds menu is open */}
+      {feedsOpen ? null : (
+        <button
+          type="button"
+          onClick={() => setComposer({ open: true })}
+          aria-label={t("nav.post")}
+          className="fixed right-4 bottom-20 z-40 grid size-14 place-items-center rounded-full bg-sky text-white shadow-lg shadow-sky/40 transition active:scale-95 sm:hidden"
+        >
+          <PenSquare className="size-6" />
+        </button>
+      )}
 
       {/* Mobile bottom bar */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-2 backdrop-blur-xl sm:hidden">
