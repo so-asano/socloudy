@@ -33,6 +33,10 @@ export const router = createBrowserRouter([
               import("@/routes/Notifications").then((m) => ({ Component: m.NotificationsPage })),
           },
           {
+            path: "feed/:feed",
+            lazy: () => import("@/routes/FeedView").then((m) => ({ Component: m.FeedViewPage })),
+          },
+          {
             path: "profile/:actor",
             lazy: () => import("@/routes/Profile").then((m) => ({ Component: m.ProfilePage })),
           },

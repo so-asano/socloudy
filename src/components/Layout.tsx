@@ -1,13 +1,25 @@
 import { sessionAtom } from "@/atoms/auth";
 import { composerAtom } from "@/atoms/composer";
+import { homeTopAtom } from "@/atoms/feed";
 import { Avatar } from "@/components/Avatar";
 import { Composer } from "@/components/Composer";
 import { Lightbox } from "@/components/Lightbox";
 import { SettingsControls } from "@/components/SettingsControls";
 import { useAuthActions } from "@/lib/auth";
-import { useUnreadCount } from "@/lib/queries";
+import { useSavedFeeds, useTimelineLatest, useUnreadCount } from "@/lib/queries";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
-import { Bell, Cloud, Home, LogOut, type LucideIcon, PenSquare, Search, User } from "lucide-react";
+import {
+  Bell,
+  Cloud,
+  Hash,
+  Home,
+  LogOut,
+  type LucideIcon,
+  PenSquare,
+  Search,
+  User,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
@@ -19,6 +31,11 @@ export function Layout() {
   const { logout } = useAuthActions();
   const navigate = useNavigate();
   const { data: unread = 0 } = useUnreadCount();
+  const { data: feeds = [] } = useSavedFeeds();
+  const { data: latestTop } = useTimelineLatest();
+  const homeTop = useAtomValue(homeTopAtom);
+  const hasNewHome = !!latestTop && !!homeTop && latestTop !== homeTop;
+  const qc = useQueryClient();
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `grid size-12 place-items-center rounded-full transition ${
@@ -32,6 +49,12 @@ export function Layout() {
 
   // clicking a nav item scrolls back to the top (e.g. re-tapping the current tab)
   const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  // Home: scroll up and pull in any new posts.
+  const goHome = () => {
+    toTop();
+    qc.invalidateQueries({ queryKey: ["timeline"] });
+  };
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-5xl">
@@ -48,9 +71,14 @@ export function Layout() {
             className={navClass}
             aria-label={t("nav.home")}
             title={t("nav.home")}
-            onClick={toTop}
+            onClick={goHome}
           >
-            <Home className="size-6" />
+            <span className="relative">
+              <Home className="size-6" />
+              {hasNewHome ? (
+                <span className="-top-0.5 -right-1 absolute size-2.5 rounded-full bg-white ring-2 ring-sky" />
+              ) : null}
+            </span>
           </NavLink>
           <NavLink
             to="/search"
@@ -84,6 +112,33 @@ export function Layout() {
         >
           <PenSquare className="size-5" />
         </button>
+
+        {/* pinned custom feeds */}
+        {feeds.length > 0 ? (
+          <nav className="mt-3 flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto">
+            {feeds.map((f) => (
+              <NavLink
+                key={f.uri}
+                to={`/feed/${encodeURIComponent(f.uri)}`}
+                title={f.name}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 rounded-full py-1.5 pr-3 pl-1.5 text-sm transition ${
+                    isActive ? "bg-white text-sky" : "hover:bg-white/25"
+                  }`
+                }
+              >
+                {f.avatar ? (
+                  <img src={f.avatar} alt="" className="size-7 shrink-0 rounded-full" />
+                ) : (
+                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white/20">
+                    <Hash className="size-4" />
+                  </span>
+                )}
+                <span className="truncate">{f.name}</span>
+              </NavLink>
+            ))}
+          </nav>
+        ) : null}
 
         <div className="mt-auto flex flex-col gap-2">
           <SettingsControls />
@@ -122,7 +177,7 @@ export function Layout() {
 
       {/* Mobile bottom bar */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-2 backdrop-blur-xl sm:hidden">
-        <MobileLink to="/" end icon={Home} label={t("nav.home")} onClick={toTop} />
+        <MobileLink to="/" end icon={Home} label={t("nav.home")} onClick={goHome} />
         <MobileLink to="/search" icon={Search} label={t("nav.search")} onClick={toTop} />
         <MobileLink
           to="/notifications"

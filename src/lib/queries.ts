@@ -25,6 +25,57 @@ export function useTimeline() {
   });
 }
 
+/** Lightweight poll of the newest home post's URI, to detect new posts without inserting them. */
+export function useTimelineLatest() {
+  return useQuery({
+    queryKey: ["timelineLatest"],
+    queryFn: async () => {
+      const res = await agent.getTimeline({ limit: 1 });
+      return res.data.feed[0]?.post.uri ?? null;
+    },
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
+  });
+}
+
+/** Posts from a custom feed generator. */
+export function useFeedPosts(feed: string) {
+  return useInfiniteQuery({
+    queryKey: ["feed", feed],
+    initialPageParam: undefined as string | undefined,
+    queryFn: async ({ pageParam }) => {
+      const res = await agent.app.bsky.feed.getFeed({ feed, limit: 30, cursor: pageParam });
+      return res.data as FeedPage;
+    },
+    getNextPageParam: (last) => last.cursor,
+    enabled: !!feed,
+  });
+}
+
+export type SavedFeed = { uri: string; name: string; avatar?: string };
+
+/** The user's pinned custom feeds (from preferences), resolved to name + avatar. */
+export function useSavedFeeds() {
+  return useQuery({
+    queryKey: ["savedFeeds"],
+    staleTime: 5 * 60_000,
+    queryFn: async (): Promise<SavedFeed[]> => {
+      const prefs = await agent.getPreferences();
+      const pinned = prefs.savedFeeds.filter((f) => f.pinned && f.type === "feed");
+      if (pinned.length === 0) return [];
+      const uris = pinned.map((f) => f.value);
+      const gens = await agent.app.bsky.feed.getFeedGenerators({ feeds: uris });
+      const byUri: Record<string, AppBskyFeedDefs.GeneratorView> = {};
+      for (const g of gens.data.feeds) byUri[g.uri] = g;
+      return pinned.map((f) => ({
+        uri: f.value,
+        name: byUri[f.value]?.displayName ?? "Feed",
+        avatar: byUri[f.value]?.avatar,
+      }));
+    },
+  });
+}
+
 /** A user's authored posts (their profile feed). */
 export function useAuthorFeed(actor: string) {
   return useInfiniteQuery({
@@ -55,10 +106,13 @@ export function usePostThread(uri: string) {
   });
 }
 
+/** What a notification's subject resolves to: a post, or a feed generator. */
+export type Subject = { post?: PostView; feed?: { name: string; avatar?: string } };
+
 /**
- * Resolve notification subject URIs to posts, returned as a (subjectUri → PostView) map.
- * Some subjects are post URIs (like/repost/quote), others are REPOST URIs (like-via-repost,
- * repost-via-repost) — those are resolved to the original post they point at first.
+ * Resolve notification subject URIs (subjectUri → Subject). Subjects may be posts
+ * (like/repost/quote), REPOST records (like-via-repost — resolved to the original post),
+ * or FEED GENERATORS (someone liked/reposted your feed).
  */
 export function useSubjectPosts(uris: string[]) {
   const sorted = [...new Set(uris)].sort();
@@ -67,12 +121,13 @@ export function useSubjectPosts(uris: string[]) {
     enabled: sorted.length > 0,
     staleTime: 5 * 60_000,
     queryFn: async () => {
-      // subjectUri (as given on the notification) → the post URI to actually fetch
-      const postFor: Record<string, string> = {};
+      const postFor: Record<string, string> = {}; // subjectUri → post URI to fetch
       const reposts: string[] = [];
+      const generators: string[] = [];
       for (const u of sorted) {
         if (u.includes("/app.bsky.feed.post/")) postFor[u] = u;
         else if (u.includes("/app.bsky.feed.repost/")) reposts.push(u);
+        else if (u.includes("/app.bsky.feed.generator/")) generators.push(u);
       }
       await Promise.all(
         reposts.map(async (u) => {
@@ -92,16 +147,27 @@ export function useSubjectPosts(uris: string[]) {
         }),
       );
 
+      const map: Record<string, Subject> = {};
+
       const toFetch = [...new Set(Object.values(postFor))];
       const byUri: Record<string, PostView> = {};
       for (let i = 0; i < toFetch.length; i += 25) {
         const res = await agent.getPosts({ uris: toFetch.slice(i, i + 25) });
         for (const p of res.data.posts) byUri[p.uri] = p;
       }
-
-      const map: Record<string, PostView> = {};
       for (const [subjectUri, postUri] of Object.entries(postFor)) {
-        if (byUri[postUri]) map[subjectUri] = byUri[postUri];
+        if (byUri[postUri]) map[subjectUri] = { post: byUri[postUri] };
+      }
+
+      if (generators.length > 0) {
+        try {
+          const gens = await agent.app.bsky.feed.getFeedGenerators({ feeds: generators });
+          for (const g of gens.data.feeds) {
+            map[g.uri] = { feed: { name: g.displayName, avatar: g.avatar } };
+          }
+        } catch {
+          // ignore
+        }
       }
       return map;
     },
@@ -117,12 +183,11 @@ function patchCachedPost(
   uri: string,
   patch: (p: PostView) => void,
 ) {
-  qc.setQueriesData<InfiniteData<FeedPage>>({ queryKey: ["timeline"] }, (data) =>
-    patchInfinite(data, uri, patch),
-  );
-  qc.setQueriesData<InfiniteData<FeedPage>>({ queryKey: ["authorFeed"] }, (data) =>
-    patchInfinite(data, uri, patch),
-  );
+  for (const key of [["timeline"], ["authorFeed"], ["feed"]]) {
+    qc.setQueriesData<InfiniteData<FeedPage>>({ queryKey: key }, (data) =>
+      patchInfinite(data, uri, patch),
+    );
+  }
 }
 
 function patchInfinite(
