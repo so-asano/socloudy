@@ -9,6 +9,7 @@ export const en: Resources = {
     profile: "Profile",
     post: "Post",
     feeds: "Feeds",
+    following: "Following",
     logout: "Log out",
   },
   feeds: {

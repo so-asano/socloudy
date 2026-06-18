@@ -62,16 +62,16 @@ export function Layout() {
           {t("app.name")}
         </div>
         <nav className="flex flex-row gap-1">
-          <NavLink
-            to="/"
-            end
-            className={navClass}
-            aria-label={t("nav.home")}
-            title={t("nav.home")}
-            onClick={goHome}
+          {/* the post action takes the slot the home button used to occupy */}
+          <button
+            type="button"
+            onClick={() => setComposer({ open: true })}
+            aria-label={t("nav.post")}
+            title={t("nav.post")}
+            className="grid size-12 place-items-center rounded-full border border-white text-white transition hover:bg-white/25"
           >
-            <Home className="size-6" />
-          </NavLink>
+            <PenSquare className="size-5" />
+          </button>
           <NavLink
             to="/search"
             className={navClass}
@@ -95,42 +95,47 @@ export function Layout() {
           </NavLink>
           {/* profile is reachable from the user avatar at the bottom */}
         </nav>
-        <button
-          type="button"
-          onClick={() => setComposer({ open: true })}
-          aria-label={t("nav.post")}
-          title={t("nav.post")}
-          className="mt-2 grid size-12 place-items-center rounded-full border border-white text-white transition hover:bg-white/25"
-        >
-          <PenSquare className="size-5" />
-        </button>
 
-        {/* pinned custom feeds */}
-        {feeds.length > 0 ? (
-          <nav className="my-12 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-3">
-            {feeds.map((f) => (
-              <NavLink
-                key={f.uri}
-                to={`/feed/${encodeURIComponent(f.uri)}`}
-                title={f.name}
-                className={({ isActive }) =>
-                  `flex items-center gap-2 rounded-full py-2 pr-3 pl-1.5 text-sm transition ${
-                    isActive ? "bg-white text-sky" : "hover:bg-white/25"
-                  }`
-                }
-              >
-                {f.avatar ? (
-                  <img src={f.avatar} alt="" className="size-7 shrink-0 rounded-full" />
-                ) : (
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white/20">
-                    <Hash className="size-4" />
-                  </span>
-                )}
-                <span className="truncate">{f.name}</span>
-              </NavLink>
-            ))}
-          </nav>
-        ) : null}
+        {/* "Following" home timeline, then the pinned custom feeds */}
+        <nav className="feed-list my-6 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-8">
+          <NavLink
+            to="/"
+            end
+            title={t("nav.following")}
+            onClick={goHome}
+            className={({ isActive }) =>
+              `flex items-center gap-2 rounded-full py-2 pr-3 pl-1.5 text-sm transition ${
+                isActive ? "bg-white text-sky" : "hover:bg-white/25"
+              }`
+            }
+          >
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white/20">
+              <Home className="size-4" />
+            </span>
+            <span className="truncate">{t("nav.following")}</span>
+          </NavLink>
+          {feeds.map((f) => (
+            <NavLink
+              key={f.uri}
+              to={`/feed/${encodeURIComponent(f.uri)}`}
+              title={f.name}
+              className={({ isActive }) =>
+                `flex items-center gap-2 rounded-full py-2 pr-3 pl-1.5 text-sm transition ${
+                  isActive ? "bg-white text-sky" : "hover:bg-white/25"
+                }`
+              }
+            >
+              {f.avatar ? (
+                <img src={f.avatar} alt="" className="size-7 shrink-0 rounded-full" />
+              ) : (
+                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white/20">
+                  <Hash className="size-4" />
+                </span>
+              )}
+              <span className="truncate">{f.name}</span>
+            </NavLink>
+          ))}
+        </nav>
 
         <div className="mt-auto flex flex-col gap-2">
           <SettingsControls />
@@ -177,31 +182,45 @@ export function Layout() {
             className="fixed inset-0 z-40 sm:hidden"
           />
           <div className="fixed inset-x-3 bottom-20 z-40 max-h-[55vh] overflow-y-auto rounded-3xl border border-white/30 bg-sky/90 p-2 shadow-xl backdrop-blur-xl sm:hidden">
-            {feeds.length === 0 ? (
-              <p className="px-3 py-4 text-center text-sm text-white/80">{t("feeds.empty")}</p>
-            ) : (
-              feeds.map((f) => (
-                <NavLink
-                  key={f.uri}
-                  to={`/feed/${encodeURIComponent(f.uri)}`}
-                  onClick={() => setFeedsOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-2xl px-2 py-2 text-sm transition ${
-                      isActive ? "bg-white text-sky" : "text-white"
-                    }`
-                  }
-                >
-                  {f.avatar ? (
-                    <img src={f.avatar} alt="" className="size-8 shrink-0 rounded-full" />
-                  ) : (
-                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20">
-                      <Hash className="size-4" />
-                    </span>
-                  )}
-                  <span className="truncate">{f.name}</span>
-                </NavLink>
-              ))
-            )}
+            <NavLink
+              to="/"
+              end
+              onClick={() => {
+                setFeedsOpen(false);
+                goHome();
+              }}
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-2xl px-2 py-2 text-sm transition ${
+                  isActive ? "bg-white text-sky" : "text-white"
+                }`
+              }
+            >
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20">
+                <Home className="size-4" />
+              </span>
+              <span className="truncate">{t("nav.following")}</span>
+            </NavLink>
+            {feeds.map((f) => (
+              <NavLink
+                key={f.uri}
+                to={`/feed/${encodeURIComponent(f.uri)}`}
+                onClick={() => setFeedsOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-2xl px-2 py-2 text-sm transition ${
+                    isActive ? "bg-white text-sky" : "text-white"
+                  }`
+                }
+              >
+                {f.avatar ? (
+                  <img src={f.avatar} alt="" className="size-8 shrink-0 rounded-full" />
+                ) : (
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20">
+                    <Hash className="size-4" />
+                  </span>
+                )}
+                <span className="truncate">{f.name}</span>
+              </NavLink>
+            ))}
           </div>
         </>
       ) : null}
@@ -220,7 +239,6 @@ export function Layout() {
 
       {/* Mobile bottom bar */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-2 backdrop-blur-xl sm:hidden">
-        <MobileLink to="/" end icon={Home} label={t("nav.home")} onClick={goHome} />
         <MobileLink to="/search" icon={Search} label={t("nav.search")} onClick={toTop} />
         <MobileLink
           to="/notifications"

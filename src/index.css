@@ -67,6 +67,29 @@ summary {
   cursor: pointer;
 }
 
+/* Sidebar feed list: no scrollbar, and items softly fade out at the top/bottom edges. */
+.feed-list {
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 2rem,
+    #000 calc(100% - 2rem),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 2rem,
+    #000 calc(100% - 2rem),
+    transparent 100%
+  );
+}
+
+.feed-list::-webkit-scrollbar {
+  display: none;
+}
+
 /* Cloud loading indicator: a gentle scale pulse. */
 @keyframes cloud-bob {
   0%,
