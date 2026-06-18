@@ -17,13 +17,14 @@ import {
   type AppBskyNotificationListNotifications,
 } from "@atproto/api";
 import { useQueryClient } from "@tanstack/react-query";
+import type { ParseKeys } from "i18next";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 type Notification = AppBskyNotificationListNotifications.Notification;
 
-const REASON_KEY: Record<string, string> = {
+const REASON_KEY: Record<string, ParseKeys> = {
   like: "notifications.liked",
   repost: "notifications.reposted",
   follow: "notifications.followed",

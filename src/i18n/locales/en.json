@@ -1,0 +1,94 @@
+{
+  "app": { "name": "socloudy" },
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "post": "Post",
+    "feeds": "Feeds",
+    "following": "Following",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "feeds": {
+    "empty": "No pinned feeds."
+  },
+  "login": {
+    "title": "Log in",
+    "subtitle": "Sign in with your Bluesky account",
+    "service": "Service",
+    "identifier": "Handle or email",
+    "identifierPlaceholder": "you.bsky.social",
+    "password": "App password",
+    "passwordHint": "Use an app password, not your main account password.",
+    "submit": "Log in",
+    "submitting": "Logging in…",
+    "failed": "Login failed. Please check your details."
+  },
+  "timeline": {
+    "title": "Home",
+    "empty": "No posts yet."
+  },
+  "post": {
+    "reply": "Reply",
+    "repost": "Repost",
+    "like": "Like",
+    "delete": "Delete",
+    "replyingTo": "Replying to {{handle}}",
+    "placeholder": "What's up?",
+    "replyPlaceholder": "Write your reply",
+    "submit": "Post",
+    "submitting": "Posting…",
+    "charsLeft": "{{count}} left",
+    "cancel": "Cancel",
+    "failed": "Failed to post.",
+    "addImage": "Add image",
+    "altText": "Alt text",
+    "altPlaceholder": "Describe the image (optional)",
+    "removeImage": "Remove image",
+    "tooManyImages": "Up to 4 images.",
+    "uploadFailed": "Failed to upload image."
+  },
+  "profile": {
+    "posts": "Posts",
+    "followers": "Followers",
+    "following": "Following",
+    "empty": "No posts.",
+    "follow": "Follow",
+    "unfollow": "Following",
+    "followsYou": "Follows you"
+  },
+  "thread": {
+    "title": "Thread",
+    "notFound": "Post not found."
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search people",
+    "empty": "No matching users found."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications.",
+    "liked": "liked your post",
+    "reposted": "reposted your post",
+    "likedViaRepost": "liked your repost",
+    "repostedViaRepost": "reposted your repost",
+    "likedFeed": "liked your feed",
+    "repostedFeed": "reposted your feed",
+    "followed": "followed you",
+    "replied": "replied",
+    "mentioned": "mentioned you",
+    "quoted": "quoted your post",
+    "others": "and {{count}} others"
+  },
+  "common": {
+    "loadMore": "Load more",
+    "loading": "Loading…",
+    "retry": "Retry",
+    "error": "Something went wrong.",
+    "language": "Language",
+    "close": "Close"
+  }
+}

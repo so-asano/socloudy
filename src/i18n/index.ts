@@ -1,5 +1,5 @@
-import { en } from "@/i18n/locales/en";
-import { ja } from "@/i18n/locales/ja";
+import en from "@/i18n/locales/en.json";
+import ja from "@/i18n/locales/ja.json";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
