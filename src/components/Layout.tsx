@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export function Layout() {
   const { t } = useTranslation();
@@ -35,6 +35,7 @@ export function Layout() {
   const qc = useQueryClient();
   const [feedsOpen, setFeedsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const onFeed = useLocation().pathname.startsWith("/feed/");
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `grid size-12 place-items-center rounded-full transition ${
@@ -299,7 +300,7 @@ export function Layout() {
           }}
           aria-label={t("nav.feeds")}
           className={`grid size-11 place-items-center rounded-full transition ${
-            feedsOpen ? "bg-white text-sky" : "text-white"
+            onFeed ? "bg-white text-sky" : "text-white"
           }`}
         >
           <Hash className="size-6" />
