@@ -58,6 +58,15 @@ html.dark body {
   scrollbar-width: thin;
 }
 
+/* Tailwind v4's Preflight drops the default button cursor; restore it for all
+   interactive controls so clickable chrome consistently shows a pointer. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+label[for],
+summary {
+  cursor: pointer;
+}
+
 /* Cloud loading indicator: a gentle scale pulse. */
 @keyframes cloud-bob {
   0%,
