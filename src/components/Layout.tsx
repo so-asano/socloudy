@@ -163,7 +163,7 @@ export function Layout() {
           On mobile, overflow-x-clip keeps the scaled/drifting clouds from overflowing the
           viewport width (without making this a vertical scroll container); desktop is free
           to overflow. */}
-      <main className="relative isolate min-w-0 max-w-full flex-1 overflow-x-clip pb-16 sm:overflow-x-visible sm:pb-0">
+      <main className="relative isolate min-w-0 max-w-full flex-1 overflow-x-clip pb-24 sm:overflow-x-visible sm:pb-0">
         <Outlet />
       </main>
 
@@ -251,7 +251,7 @@ export function Layout() {
       )}
 
       {/* Mobile bottom bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-2 backdrop-blur-xl sm:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-3.5 backdrop-blur-xl sm:hidden">
         <MobileLink
           to="/"
           end
