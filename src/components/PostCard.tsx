@@ -50,8 +50,10 @@ export function PostCard({
           : len <= 280
             ? "text-[15px]"
             : len <= 450
-              ? "text-sm"
-              : "text-[13px]";
+              ? "text-[13px]"
+              : len <= 700
+                ? "text-xs"
+                : "text-[11px]";
   const liked = !!post.viewer?.like;
   const reposted = !!post.viewer?.repost;
   const [popping, setPopping] = useState(false);
