@@ -97,70 +97,71 @@ export function PostCard({
           tabIndex={-1}
         />
         {repostedBy ? (
-          <p className="mb-1 flex items-center gap-1 pl-12 text-xs text-zinc-500">
+          <p className="mb-1 flex items-center gap-1 text-xs text-zinc-500">
             <Repeat2 className="size-3.5" /> {repostedBy.displayName ?? repostedBy.handle}
           </p>
         ) : null}
         {replyTo ? (
-          <p className="mb-1 flex items-center gap-1.5 pl-12 text-sm text-zinc-500">
+          <p className="mb-1 flex items-center gap-1.5 text-sm text-zinc-500">
             <Reply className="size-5 shrink-0" /> {t("post.replyingTo", { handle: `@${replyTo}` })}
           </p>
         ) : null}
-        <div className="flex gap-3">
-          <Link to={`/profile/${author.handle}`} className="relative z-10">
+
+        {/* header: avatar + name/handle/time, vertically centered together */}
+        <div className="flex items-center gap-3">
+          <Link to={`/profile/${author.handle}`} className="relative z-10 shrink-0">
             <Avatar src={author.avatar} alt={author.handle} />
           </Link>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-baseline gap-1 text-sm">
-              <Link
-                to={`/profile/${author.handle}`}
-                className="relative z-10 truncate font-semibold hover:underline"
-              >
-                {author.displayName ?? author.handle}
-              </Link>
-              <span className="truncate text-zinc-500">@{author.handle}</span>
-              <span className="text-zinc-400">·</span>
-              <span className="shrink-0 text-zinc-500">
-                {timeAgo(record.createdAt, i18n.resolvedLanguage ?? "en")}
-              </span>
-            </div>
-
-            <div className={`mt-0.5 ${textSize}`}>
-              <RichText text={record.text} facets={record.facets} />
-            </div>
-
-            {post.embed ? (
-              <div className="relative z-10 mt-2">
-                <PostEmbed embed={post.embed} />
-              </div>
-            ) : null}
-
-            <div className="relative z-10 mt-2 flex items-center justify-center gap-10 text-zinc-500 text-sm sm:gap-14">
-              <Action
-                icon={MessageCircle}
-                label={t("post.reply")}
-                onClick={openReply}
-                count={post.replyCount}
-              />
-              <Action
-                icon={Repeat2}
-                label={t("post.repost")}
-                active={reposted}
-                activeClass="text-green-600"
-                count={post.repostCount}
-                onClick={onRepost}
-              />
-              <Action
-                icon={Heart}
-                label={t("post.like")}
-                active={liked}
-                fill={liked}
-                activeClass="text-pink-600"
-                count={post.likeCount}
-                onClick={onLike}
-              />
-            </div>
+          <div className="flex min-w-0 flex-1 items-baseline gap-1 text-sm">
+            <Link
+              to={`/profile/${author.handle}`}
+              className="relative z-10 truncate font-semibold hover:underline"
+            >
+              {author.displayName ?? author.handle}
+            </Link>
+            <span className="truncate text-zinc-500">@{author.handle}</span>
+            <span className="text-zinc-400">·</span>
+            <span className="shrink-0 text-zinc-500">
+              {timeAgo(record.createdAt, i18n.resolvedLanguage ?? "en")}
+            </span>
           </div>
+        </div>
+
+        {/* body spans the full card width */}
+        <div className={`mt-3 ${textSize}`}>
+          <RichText text={record.text} facets={record.facets} />
+        </div>
+
+        {post.embed ? (
+          <div className="relative z-10 mt-2">
+            <PostEmbed embed={post.embed} />
+          </div>
+        ) : null}
+
+        <div className="relative z-10 mt-2 flex items-center justify-center gap-10 text-zinc-500 text-sm sm:gap-14">
+          <Action
+            icon={MessageCircle}
+            label={t("post.reply")}
+            onClick={openReply}
+            count={post.replyCount}
+          />
+          <Action
+            icon={Repeat2}
+            label={t("post.repost")}
+            active={reposted}
+            activeClass="text-green-600"
+            count={post.repostCount}
+            onClick={onRepost}
+          />
+          <Action
+            icon={Heart}
+            label={t("post.like")}
+            active={liked}
+            fill={liked}
+            activeClass="text-pink-600"
+            count={post.likeCount}
+            onClick={onLike}
+          />
         </div>
       </div>
     </article>
