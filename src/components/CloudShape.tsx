@@ -2,8 +2,8 @@ import { themeAtom } from "@/lib/theme";
 import { useAtomValue } from "jotai";
 import { useLayoutEffect, useRef } from "react";
 
-const BUMP = 26; // target bump radius (px) — kept constant so puffs look the same at any size
-const MARGIN = 44; // canvas overflow past the card so outward bumps aren't clipped
+const BUMP = 42; // target bump radius (px) — bigger = fewer, cleaner lobes (lucide-ish)
+const MARGIN = 56; // canvas overflow past the card so outward bumps aren't clipped
 
 function rand(seed: number, i: number): number {
   const x = Math.sin(seed * 12.9898 + i * 78.233) * 43758.5453;

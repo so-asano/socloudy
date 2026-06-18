@@ -88,7 +88,7 @@ function QuoteCard({ record }: { record: AppBskyEmbedRecord.View }) {
   if (!AppBskyEmbedRecord.isViewRecord(r)) return null;
   const value = r.value as { text?: string };
   return (
-    <div className="rounded-xl border border-white p-3 text-sm dark:border-white">
+    <div className="rounded-xl bg-black/[0.06] p-3 text-sm dark:bg-white/10">
       <p className="mb-1 font-medium">
         {r.author.displayName ?? r.author.handle}{" "}
         <span className="font-normal text-zinc-500">@{r.author.handle}</span>
