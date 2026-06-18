@@ -3,11 +3,15 @@ import { CloudShape } from "@/components/CloudShape";
 import { PageHeader } from "@/components/PageHeader";
 import { Spinner } from "@/components/Spinner";
 import { useCloudMotion } from "@/lib/cloudMotion";
-import { useMarkNotificationsRead, useNotifications, useSubjectPosts } from "@/lib/queries";
+import {
+  type Subject,
+  useMarkNotificationsRead,
+  useNotifications,
+  useSubjectPosts,
+} from "@/lib/queries";
 import { cloudSeed, threadPath, timeAgo } from "@/lib/util";
 import {
   AppBskyEmbedImages,
-  type AppBskyFeedDefs,
   type AppBskyFeedPost,
   type AppBskyNotificationListNotifications,
 } from "@atproto/api";
@@ -16,7 +20,6 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 type Notification = AppBskyNotificationListNotifications.Notification;
-type PostView = AppBskyFeedDefs.PostView;
 
 const REASON_KEY: Record<string, string> = {
   like: "notifications.liked",
@@ -89,20 +92,33 @@ export function NotificationsPage() {
   );
 }
 
-function NotificationRow({ n, subject }: { n: Notification; subject?: PostView }) {
+function NotificationRow({ n, subject }: { n: Notification; subject?: Subject }) {
   const { t, i18n } = useTranslation();
-  const action = REASON_KEY[n.reason] ? t(REASON_KEY[n.reason]) : n.reason;
   const record = n.record as { text?: string } | undefined;
-  // like/repost point at the liked post; reply/mention/quote point at the new post.
+  const isFeedSubject = !!subject?.feed;
+  // like/repost point at the liked post (or feed); reply/mention/quote at the new post.
   const target = n.reason === "like" || n.reason === "repost" ? n.reasonSubject : n.uri;
   const to =
-    n.reason === "follow" ? `/profile/${n.author.handle}` : target ? threadPath(target) : null;
-  const subjectText = subject ? (subject.record as AppBskyFeedPost.Record).text : undefined;
+    n.reason === "follow"
+      ? `/profile/${n.author.handle}`
+      : isFeedSubject && target
+        ? `/feed/${encodeURIComponent(target)}`
+        : target
+          ? threadPath(target)
+          : null;
+
+  // "liked your feed" / "reposted your feed" when the subject is a feed generator.
+  const reasonKey = isFeedSubject
+    ? n.reason === "repost"
+      ? "notifications.repostedFeed"
+      : "notifications.likedFeed"
+    : REASON_KEY[n.reason];
+  const action = reasonKey ? t(reasonKey) : n.reason;
+
+  const post = subject?.post;
+  const subjectText = post ? (post.record as AppBskyFeedPost.Record).text : undefined;
   const subjectImg =
-    subject && AppBskyEmbedImages.isView(subject.embed)
-      ? subject.embed.images[0]?.thumb
-      : undefined;
-  const hasSubject = !!subjectText || !!subjectImg;
+    post && AppBskyEmbedImages.isView(post.embed) ? post.embed.images[0]?.thumb : undefined;
 
   const ref = useCloudMotion<HTMLDivElement>(cloudSeed(n.uri));
 
@@ -124,8 +140,8 @@ function NotificationRow({ n, subject }: { n: Notification; subject?: PostView }
             ) : null}
           </div>
         </div>
-        {/* the post this notification is about (your liked/reposted post) */}
-        {hasSubject ? (
+        {/* the post or feed this notification is about */}
+        {subjectText || subjectImg ? (
           <div className="mt-2 space-y-2 rounded-2xl bg-black/5 px-3 py-2 dark:bg-white/10">
             {subjectText ? (
               <p className="line-clamp-4 whitespace-pre-wrap text-[15px]">{subjectText}</p>
@@ -133,6 +149,13 @@ function NotificationRow({ n, subject }: { n: Notification; subject?: PostView }
             {subjectImg ? (
               <img src={subjectImg} alt="" className="max-h-40 w-full rounded-xl object-cover" />
             ) : null}
+          </div>
+        ) : subject?.feed ? (
+          <div className="mt-2 flex items-center gap-2 rounded-2xl bg-black/5 px-3 py-2 dark:bg-white/10">
+            {subject.feed.avatar ? (
+              <img src={subject.feed.avatar} alt="" className="size-8 rounded-lg" />
+            ) : null}
+            <span className="font-semibold text-[15px]">{subject.feed.name}</span>
           </div>
         ) : null}
       </div>

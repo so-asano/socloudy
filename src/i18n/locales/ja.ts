@@ -69,6 +69,8 @@ export const ja = {
     reposted: "あなたの投稿をリポストしました",
     likedViaRepost: "あなたのリポストをいいねしました",
     repostedViaRepost: "あなたのリポストをリポストしました",
+    likedFeed: "あなたのフィードにいいねしました",
+    repostedFeed: "あなたのフィードをリポストしました",
     followed: "あなたをフォローしました",
     replied: "返信しました",
     mentioned: "あなたに言及しました",

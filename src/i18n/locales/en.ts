@@ -71,6 +71,8 @@ export const en: Resources = {
     reposted: "reposted your post",
     likedViaRepost: "liked your repost",
     repostedViaRepost: "reposted your repost",
+    likedFeed: "liked your feed",
+    repostedFeed: "reposted your feed",
     followed: "followed you",
     replied: "replied",
     mentioned: "mentioned you",
