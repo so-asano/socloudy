@@ -36,6 +36,7 @@ export const en: Resources = {
     reply: "Reply",
     repost: "Repost",
     like: "Like",
+    delete: "Delete",
     replyingTo: "Replying to {{handle}}",
     placeholder: "What's up?",
     replyPlaceholder: "Write your reply",

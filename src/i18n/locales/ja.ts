@@ -34,6 +34,7 @@ export const ja = {
     reply: "返信",
     repost: "リポスト",
     like: "いいね",
+    delete: "削除",
     replyingTo: "{{handle}} への返信",
     placeholder: "いまどうしてる？",
     replyPlaceholder: "返信を投稿",

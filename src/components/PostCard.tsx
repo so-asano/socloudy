@@ -1,14 +1,15 @@
+import { sessionAtom } from "@/atoms/auth";
 import { composerAtom } from "@/atoms/composer";
 import { Avatar } from "@/components/Avatar";
 import { CloudShape } from "@/components/CloudShape";
 import { PostEmbed } from "@/components/PostEmbed";
 import { RichText } from "@/components/RichText";
 import { useCloudMotion } from "@/lib/cloudMotion";
-import { useToggleLike, useToggleRepost } from "@/lib/queries";
+import { useDeletePost, useToggleLike, useToggleRepost } from "@/lib/queries";
 import { cloudSeed, threadPath, timeAgo } from "@/lib/util";
 import type { AppBskyFeedDefs, AppBskyFeedPost } from "@atproto/api";
-import { useSetAtom } from "jotai";
-import { Heart, type LucideIcon, MessageCircle, Repeat2, Reply } from "lucide-react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { Heart, type LucideIcon, MessageCircle, Repeat2, Reply, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -28,11 +29,14 @@ export function PostCard({
 }) {
   const { t, i18n } = useTranslation();
   const setComposer = useSetAtom(composerAtom);
+  const me = useAtomValue(sessionAtom);
   const toggleLike = useToggleLike();
   const toggleRepost = useToggleRepost();
+  const deletePost = useDeletePost();
 
   const record = post.record as AppBskyFeedPost.Record;
   const author = post.author;
+  const isMine = !!me && me.did === author.did;
   const seed = cloudSeed(post.cid);
 
   // Scroll-linked coverflow motion; `focused` only drives emphasis styling below.
@@ -67,6 +71,8 @@ export function PostCard({
     if (!reposted) setPopping(true);
     toggleRepost.mutate(post);
   };
+
+  const onDelete = () => deletePost.mutate(post.uri);
   const repostedBy =
     reason && "by" in reason ? (reason.by as { displayName?: string; handle: string }) : null;
 
@@ -164,6 +170,14 @@ export function PostCard({
             count={post.likeCount}
             onClick={onLike}
           />
+          {isMine ? (
+            <Action
+              icon={Trash2}
+              label={t("post.delete")}
+              activeClass="text-red-600"
+              onClick={onDelete}
+            />
+          ) : null}
         </div>
       </div>
     </article>

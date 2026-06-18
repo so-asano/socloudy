@@ -250,6 +250,37 @@ function patchInfinite(
   };
 }
 
+/** Drop a post from every cached feed page (used after deleting it). */
+function removeCachedPost(qc: ReturnType<typeof useQueryClient>, uri: string) {
+  for (const key of [["timeline"], ["authorFeed"], ["feed"]]) {
+    qc.setQueriesData<InfiniteData<FeedPage>>({ queryKey: key }, (data) => {
+      if (!data) return data;
+      return {
+        ...data,
+        pages: data.pages.map((page) => ({
+          ...page,
+          feed: page.feed.filter((item) => item.post.uri !== uri),
+        })),
+      };
+    });
+  }
+}
+
+/** Delete one of the user's own posts and remove it from the caches. */
+export function useDeletePost() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (uri: string) => {
+      await agent.deletePost(uri);
+      return uri;
+    },
+    onSuccess: (uri) => {
+      removeCachedPost(qc, uri);
+      qc.invalidateQueries({ queryKey: ["thread"] });
+    },
+  });
+}
+
 export function useToggleLike() {
   const qc = useQueryClient();
   return useMutation({
