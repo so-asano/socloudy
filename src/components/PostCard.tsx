@@ -8,7 +8,7 @@ import { useToggleLike, useToggleRepost } from "@/lib/queries";
 import { cloudSeed, threadPath, timeAgo } from "@/lib/util";
 import type { AppBskyFeedDefs, AppBskyFeedPost } from "@atproto/api";
 import { useSetAtom } from "jotai";
-import { Heart, type LucideIcon, MessageCircle, Repeat2 } from "lucide-react";
+import { Heart, type LucideIcon, MessageCircle, Repeat2, Reply } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -102,8 +102,8 @@ export function PostCard({
           </p>
         ) : null}
         {replyTo ? (
-          <p className="mb-1 flex items-center gap-1 pl-12 text-xs text-zinc-500">
-            <MessageCircle className="size-3.5" /> {t("post.replyingTo", { handle: `@${replyTo}` })}
+          <p className="mb-1 flex items-center gap-1.5 pl-12 text-sm text-zinc-500">
+            <Reply className="size-5 shrink-0" /> {t("post.replyingTo", { handle: `@${replyTo}` })}
           </p>
         ) : null}
         <div className="flex gap-3">
