@@ -109,17 +109,51 @@ function QuoteCard({ record }: { record: AppBskyEmbedRecord.View }) {
   const r = record.record;
   if (!AppBskyEmbedRecord.isViewRecord(r)) return null;
   const value = r.value as { text?: string };
+  const images = quotedImages(r.embeds);
   return (
-    <div className="rounded-xl bg-black/[0.06] p-3 text-sm dark:bg-white/10">
-      <p className="mb-1 font-medium">
-        {r.author.displayName ?? r.author.handle}{" "}
-        <span className="font-normal text-zinc-500">@{r.author.handle}</span>
-      </p>
-      <p className="line-clamp-6 whitespace-pre-wrap break-words text-zinc-700 dark:text-zinc-300">
-        {value.text}
-      </p>
+    <div className="space-y-2 rounded-xl bg-black/[0.06] p-3 text-sm dark:bg-white/10">
+      <div>
+        <p className="mb-1 font-medium">
+          {r.author.displayName ?? r.author.handle}{" "}
+          <span className="font-normal text-zinc-500">@{r.author.handle}</span>
+        </p>
+        <p className="line-clamp-6 whitespace-pre-wrap break-words text-zinc-700 dark:text-zinc-300">
+          {value.text}
+        </p>
+      </div>
+      {images.length > 0 ? (
+        <div
+          className={`grid gap-1 overflow-hidden rounded-lg ${
+            images.length > 1 ? "grid-cols-2" : "grid-cols-1"
+          }`}
+        >
+          {images.slice(0, 4).map((img) => (
+            <img
+              key={img.thumb}
+              src={img.thumb}
+              alt={img.alt}
+              className={`w-full bg-zinc-100 object-cover ${
+                images.length > 1 ? "aspect-square" : "max-h-72"
+              }`}
+              loading="lazy"
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
+}
+
+/** Pull the image views out of a quoted record's embeds (direct or record-with-media). */
+function quotedImages(embeds: unknown): AppBskyEmbedImages.ViewImage[] {
+  if (!Array.isArray(embeds)) return [];
+  for (const e of embeds) {
+    if (AppBskyEmbedImages.isView(e)) return e.images;
+    if (AppBskyEmbedRecordWithMedia.isView(e) && AppBskyEmbedImages.isView(e.media)) {
+      return e.media.images;
+    }
+  }
+  return [];
 }
 
 function hostOf(uri: string): string {
