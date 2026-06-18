@@ -298,7 +298,9 @@ export function Layout() {
             setFeedsOpen((v) => !v);
           }}
           aria-label={t("nav.feeds")}
-          className={`px-4 py-1 ${feedsOpen ? "text-sky" : ""}`}
+          className={`grid size-11 place-items-center rounded-full transition ${
+            feedsOpen ? "bg-white text-sky" : "text-white"
+          }`}
         >
           <Hash className="size-6" />
         </button>
@@ -343,7 +345,11 @@ function MobileLink({
       end={end}
       aria-label={label}
       onClick={onClick}
-      className={({ isActive }) => `relative px-4 py-1 ${isActive ? "text-sky" : ""}`}
+      className={({ isActive }) =>
+        `relative grid size-11 place-items-center rounded-full transition ${
+          isActive ? "bg-white text-sky" : "text-white"
+        }`
+      }
     >
       <Icon className="size-6" />
       <Badge count={badge} />
