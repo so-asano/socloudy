@@ -33,7 +33,7 @@ export function useTimelineLatest() {
       const res = await agent.getTimeline({ limit: 1 });
       return res.data.feed[0]?.post.uri ?? null;
     },
-    refetchInterval: 60_000,
+    refetchInterval: 30_000,
     refetchOnWindowFocus: true,
   });
 }
@@ -403,7 +403,7 @@ export function useUnreadCount() {
   return useQuery({
     queryKey: ["unreadCount"],
     queryFn: async () => (await agent.countUnreadNotifications()).data.count,
-    refetchInterval: 60_000,
+    refetchInterval: 30_000,
   });
 }
 
