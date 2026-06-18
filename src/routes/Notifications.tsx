@@ -8,6 +8,7 @@ import {
   useMarkNotificationsRead,
   useNotifications,
   useSubjectPosts,
+  useUnreadCount,
 } from "@/lib/queries";
 import { cloudSeed, threadPath, timeAgo } from "@/lib/util";
 import {
@@ -15,6 +16,7 @@ import {
   type AppBskyFeedPost,
   type AppBskyNotificationListNotifications,
 } from "@atproto/api";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -36,6 +38,8 @@ export function NotificationsPage() {
   const { t } = useTranslation();
   const query = useNotifications();
   const markRead = useMarkNotificationsRead();
+  const { data: unread = 0 } = useUnreadCount();
+  const qc = useQueryClient();
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = query;
   const sentinel = useRef<HTMLDivElement>(null);
   const marked = useRef(false);
@@ -65,9 +69,18 @@ export function NotificationsPage() {
   const subjectUris = items.map((n) => n.reasonSubject).filter((u): u is string => !!u);
   const { data: subjects } = useSubjectPosts(subjectUris);
 
+  // Once the first batch is marked read, a positive unread count means newer
+  // notifications have arrived while viewing — show a dot on the pill.
+  const hasNew = markRead.isSuccess && unread > 0;
+  const loadNew = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    qc.invalidateQueries({ queryKey: ["notifications"] });
+    markRead.mutate(new Date().toISOString());
+  };
+
   return (
     <>
-      <PageHeader title={t("notifications.title")} />
+      <PageHeader title={t("notifications.title")} dot={hasNew} onTitleClick={loadNew} />
       {isLoading ? (
         <div className="grid place-items-center py-16">
           <Spinner />
