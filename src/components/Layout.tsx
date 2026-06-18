@@ -283,14 +283,28 @@ export function Layout() {
 
       {/* Mobile bottom bar */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-2 backdrop-blur-xl sm:hidden">
-        <MobileLink to="/" end icon={Home} label={t("nav.home")} onClick={goHome} />
-        <MobileLink to="/search" icon={Search} label={t("nav.search")} onClick={toTop} />
+        <MobileLink
+          to="/"
+          end
+          icon={Home}
+          label={t("nav.home")}
+          onClick={goHome}
+          suppressActive={feedsOpen}
+        />
+        <MobileLink
+          to="/search"
+          icon={Search}
+          label={t("nav.search")}
+          onClick={toTop}
+          suppressActive={feedsOpen}
+        />
         <MobileLink
           to="/notifications"
           icon={Bell}
           label={t("nav.notifications")}
           badge={unread}
           onClick={toTop}
+          suppressActive={feedsOpen}
         />
         <button
           type="button"
@@ -300,13 +314,18 @@ export function Layout() {
           }}
           aria-label={t("nav.feeds")}
           className={`grid size-11 place-items-center rounded-full transition ${
-            onFeed ? "bg-white text-sky" : "text-white"
+            feedsOpen || onFeed ? "bg-white text-sky" : "text-white"
           }`}
         >
           <Hash className="size-6" />
         </button>
         {me ? (
-          <MobileLink to={`/profile/${me.handle}`} icon={User} label={t("nav.profile")} />
+          <MobileLink
+            to={`/profile/${me.handle}`}
+            icon={User}
+            label={t("nav.profile")}
+            suppressActive={feedsOpen}
+          />
         ) : null}
       </nav>
 
@@ -332,6 +351,7 @@ function MobileLink({
   end,
   badge = 0,
   onClick,
+  suppressActive = false,
 }: {
   to: string;
   icon: LucideIcon;
@@ -339,6 +359,8 @@ function MobileLink({
   end?: boolean;
   badge?: number;
   onClick?: () => void;
+  /** force the inactive look even on the current route (e.g. while a sheet owns the active state) */
+  suppressActive?: boolean;
 }): ReactNode {
   return (
     <NavLink
@@ -348,7 +370,7 @@ function MobileLink({
       onClick={onClick}
       className={({ isActive }) =>
         `relative grid size-11 place-items-center rounded-full transition ${
-          isActive ? "bg-white text-sky" : "text-white"
+          isActive && !suppressActive ? "bg-white text-sky" : "text-white"
         }`
       }
     >
