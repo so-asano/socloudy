@@ -247,11 +247,26 @@ export function Layout() {
             onClick={() => setSettingsOpen(false)}
             className="fixed inset-0 z-40 sm:hidden"
           />
-          <div className="fixed inset-x-3 bottom-20 z-40 rounded-3xl border border-white/30 bg-sky/90 p-4 shadow-xl backdrop-blur-xl sm:hidden">
+          <div className="fixed top-20 right-3 z-40 rounded-3xl border border-white/30 bg-sky/90 p-4 shadow-xl backdrop-blur-xl sm:hidden">
             <SettingsControls />
           </div>
         </>
       ) : null}
+
+      {/* Floating settings button (mobile), always at the top-right */}
+      <button
+        type="button"
+        onClick={() => {
+          setFeedsOpen(false);
+          setSettingsOpen((v) => !v);
+        }}
+        aria-label={t("nav.settings")}
+        className={`fixed top-4 right-4 z-50 grid size-12 place-items-center rounded-full bg-sky text-white shadow-lg shadow-sky/40 transition active:scale-95 sm:hidden ${
+          settingsOpen ? "ring-2 ring-white" : ""
+        }`}
+      >
+        <Settings className="size-6" />
+      </button>
 
       {/* Floating post button (mobile) — hidden while a sheet is open */}
       {feedsOpen || settingsOpen ? null : (
@@ -286,17 +301,6 @@ export function Layout() {
           className={`px-4 py-1 ${feedsOpen ? "text-sky" : ""}`}
         >
           <Hash className="size-6" />
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setFeedsOpen(false);
-            setSettingsOpen((v) => !v);
-          }}
-          aria-label={t("nav.settings")}
-          className={`px-4 py-1 ${settingsOpen ? "text-sky" : ""}`}
-        >
-          <Settings className="size-6" />
         </button>
         {me ? (
           <MobileLink to={`/profile/${me.handle}`} icon={User} label={t("nav.profile")} />
