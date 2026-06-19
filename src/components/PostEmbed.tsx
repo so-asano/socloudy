@@ -1,5 +1,6 @@
 import { lightboxAtom } from "@/atoms/lightbox";
 import { VideoEmbed } from "@/components/VideoEmbed";
+import { threadPath } from "@/lib/util";
 import {
   AppBskyEmbedExternal,
   AppBskyEmbedImages,
@@ -8,6 +9,7 @@ import {
   AppBskyEmbedVideo,
 } from "@atproto/api";
 import { useSetAtom } from "jotai";
+import { Link } from "react-router-dom";
 
 /** Render the common post embeds: images, video, external link cards, and quote posts. */
 export function PostEmbed({ embed }: { embed: unknown }) {
@@ -116,7 +118,10 @@ function QuoteCard({ record }: { record: AppBskyEmbedRecord.View }) {
   const value = r.value as { text?: string };
   const images = quotedImages(r.embeds);
   return (
-    <div className="space-y-2 rounded-xl bg-black/[0.06] p-3 text-sm dark:bg-white/10">
+    <Link
+      to={threadPath(r.uri)}
+      className="relative z-10 block space-y-2 rounded-xl bg-black/[0.06] p-3 text-sm transition hover:bg-black/[0.1] dark:bg-white/10 dark:hover:bg-white/[0.16]"
+    >
       <div>
         <p className="mb-1 font-medium">
           {r.author.displayName ?? r.author.handle}{" "}
@@ -145,7 +150,7 @@ function QuoteCard({ record }: { record: AppBskyEmbedRecord.View }) {
           ))}
         </div>
       ) : null}
-    </div>
+    </Link>
   );
 }
 
