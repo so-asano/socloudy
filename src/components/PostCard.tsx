@@ -158,7 +158,7 @@ export function PostCard({
           </div>
         ) : null}
 
-        <div className="relative z-10 mt-2 flex items-center justify-center gap-10 text-zinc-500 text-sm sm:gap-14">
+        <div className="relative z-10 mt-2 flex items-center justify-center gap-6 text-zinc-500 text-sm sm:gap-8">
           <Action
             icon={MessageCircle}
             label={t("post.reply")}
