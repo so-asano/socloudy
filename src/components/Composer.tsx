@@ -199,6 +199,13 @@ export function Composer() {
                 autoFocus
                 value={text}
                 onChange={(e) => setText(e.target.value)}
+                onKeyDown={(e) => {
+                  // Cmd/Ctrl + Enter submits
+                  if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !e.nativeEvent.isComposing) {
+                    e.preventDefault();
+                    submit();
+                  }
+                }}
                 onScroll={() => {
                   if (backdrop.current && textarea.current) {
                     backdrop.current.scrollTop = textarea.current.scrollTop;
