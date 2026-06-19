@@ -39,8 +39,8 @@ export function LoginPage() {
   };
 
   return (
-    <div className="grid min-h-dvh place-items-center p-4">
-      <div className="absolute top-4 right-4">
+    <div className="grid min-h-dvh place-items-center px-4 pb-4 pt-[calc(1rem_+_var(--top-inset))]">
+      <div className="absolute top-[calc(1rem_+_var(--top-inset))] right-4">
         <SettingsControls />
       </div>
       <form onSubmit={submit} className="w-full max-w-sm space-y-5">
@@ -50,7 +50,7 @@ export function LoginPage() {
           <p className="text-sm text-white/80">{t("login.subtitle")}</p>
         </div>
 
-        <Field label={t("login.service")}>
+        <Field label={t("login.service")} hint={t("login.serviceHint")}>
           <input
             type="url"
             value={service}

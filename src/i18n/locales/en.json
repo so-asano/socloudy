@@ -22,6 +22,7 @@
     "title": "Log in",
     "subtitle": "Sign in with your Bluesky account",
     "service": "Service",
+    "serviceHint": "You usually don't need to change this.",
     "identifier": "Handle or email",
     "identifierPlaceholder": "you.bsky.social",
     "password": "App password",
