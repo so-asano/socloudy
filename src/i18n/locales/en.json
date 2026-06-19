@@ -39,6 +39,7 @@
     "repost": "Repost",
     "like": "Like",
     "bookmark": "Bookmark",
+    "pinned": "Pinned",
     "delete": "Delete",
     "replyingTo": "Replying to {{handle}}",
     "placeholder": "What's up?",

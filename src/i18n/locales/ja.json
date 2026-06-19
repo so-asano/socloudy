@@ -39,6 +39,7 @@
     "repost": "リポスト",
     "like": "いいね",
     "bookmark": "ブックマーク",
+    "pinned": "ピン留めされた投稿",
     "delete": "削除",
     "replyingTo": "{{handle}} への返信",
     "placeholder": "いまどうしてる？",

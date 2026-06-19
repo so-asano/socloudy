@@ -147,7 +147,12 @@ export function useAuthorFeed(actor: string) {
     queryKey: ["authorFeed", actor],
     initialPageParam: undefined as string | undefined,
     queryFn: async ({ pageParam }) => {
-      const res = await agent.getAuthorFeed({ actor, limit: 30, cursor: pageParam });
+      const res = await agent.getAuthorFeed({
+        actor,
+        limit: 30,
+        cursor: pageParam,
+        includePins: true,
+      });
       return res.data as FeedPage;
     },
     getNextPageParam: (last) => last.cursor,

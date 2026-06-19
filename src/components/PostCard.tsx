@@ -7,13 +7,14 @@ import { RichText } from "@/components/RichText";
 import { useCloudMotion } from "@/lib/cloudMotion";
 import { useDeletePost, useToggleBookmark, useToggleLike, useToggleRepost } from "@/lib/queries";
 import { cloudSeed, threadPath, timeAgo } from "@/lib/util";
-import type { AppBskyFeedDefs, AppBskyFeedPost } from "@atproto/api";
+import { AppBskyFeedDefs, type AppBskyFeedPost } from "@atproto/api";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   Bookmark,
   Heart,
   type LucideIcon,
   MessageCircle,
+  Pin,
   Repeat2,
   Reply,
   Trash2,
@@ -87,6 +88,7 @@ export function PostCard({
   const onBookmark = () => toggleBookmark.mutate(post);
   const repostedBy =
     reason && "by" in reason ? (reason.by as { displayName?: string; handle: string }) : null;
+  const pinned = !!reason && AppBskyFeedDefs.isReasonPin(reason);
 
   const openReply = () => {
     const ref = { uri: post.uri, cid: post.cid };
@@ -116,6 +118,11 @@ export function PostCard({
           aria-label={`${author.displayName ?? author.handle}: ${record.text}`}
           tabIndex={-1}
         />
+        {pinned ? (
+          <p className="mb-1 flex items-center gap-1 text-xs text-zinc-500">
+            <Pin className="size-3.5" fill="currentColor" /> {t("post.pinned")}
+          </p>
+        ) : null}
         {repostedBy ? (
           <p className="mb-1 flex items-center gap-1 text-xs text-zinc-500">
             <Repeat2 className="size-3.5" /> {repostedBy.displayName ?? repostedBy.handle}
