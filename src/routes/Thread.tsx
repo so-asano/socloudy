@@ -25,7 +25,7 @@ export function ThreadPage() {
           type="button"
           onClick={() => navigate(-1)}
           aria-label="back"
-          className="grid size-8 place-items-center rounded-full transition hover:bg-white/25"
+          className="pointer-events-auto grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-white bg-sky/85 text-white shadow-lg shadow-sky/20 backdrop-blur-xl transition hover:bg-sky"
         >
           <ArrowLeft className="size-5" />
         </button>
