@@ -1,7 +1,7 @@
 import { lightboxAtom } from "@/atoms/lightbox";
 import { useAtom } from "jotai";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /** Fullscreen image viewer. Click outside / Escape to close; arrows to navigate. */
 export function Lightbox() {
@@ -32,9 +32,26 @@ export function Lightbox() {
   const src = images[index];
   const hasPrev = index > 0;
   const hasNext = index < images.length - 1;
+  const move = (delta: number) =>
+    setState((s) =>
+      s ? { ...s, index: Math.max(0, Math.min(s.index + delta, s.images.length - 1)) } : s,
+    );
   const step = (e: React.MouseEvent, delta: number) => {
     e.stopPropagation();
-    setState((s) => (s ? { ...s, index: s.index + delta } : s));
+    move(delta);
+  };
+
+  // horizontal swipe on the image navigates between images
+  const swipeStart = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    swipeStart.current = e.touches[0]?.clientX ?? null;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    if (start == null) return;
+    const dx = (e.changedTouches[0]?.clientX ?? start) - start;
+    if (Math.abs(dx) > 50) move(dx < 0 ? 1 : -1);
   };
 
   return (
@@ -49,7 +66,9 @@ export function Lightbox() {
       <img
         src={src}
         alt=""
-        className="relative max-h-[92vh] max-w-[92vw] rounded-2xl object-contain"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        className="relative max-h-[92vh] max-w-[92vw] touch-pan-y rounded-2xl object-contain"
       />
 
       <button
