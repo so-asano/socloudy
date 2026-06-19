@@ -45,6 +45,7 @@ export function PostEmbed({ embed }: { embed: unknown }) {
 
 function ImageGrid({ images }: { images: AppBskyEmbedImages.ViewImage[] }) {
   const openLightbox = useSetAtom(lightboxAtom);
+  const fullsizes = images.map((i) => i.fullsize);
 
   // Single image: show it at its own aspect ratio (capped in height) instead of cropping.
   if (images.length === 1) {
@@ -56,7 +57,7 @@ function ImageGrid({ images }: { images: AppBskyEmbedImages.ViewImage[] }) {
     return (
       <button
         type="button"
-        onClick={() => openLightbox(img.fullsize)}
+        onClick={() => openLightbox({ images: fullsizes, index: 0 })}
         className="block w-full cursor-zoom-in overflow-hidden rounded-xl border border-white"
       >
         <img
@@ -73,11 +74,11 @@ function ImageGrid({ images }: { images: AppBskyEmbedImages.ViewImage[] }) {
   // Multiple images: uniform tiles in a 2-column grid.
   return (
     <div className="grid grid-cols-2 gap-1 overflow-hidden rounded-xl border border-white">
-      {images.map((img) => (
+      {images.map((img, i) => (
         <button
           key={img.thumb}
           type="button"
-          onClick={() => openLightbox(img.fullsize)}
+          onClick={() => openLightbox({ images: fullsizes, index: i })}
           className="cursor-zoom-in"
         >
           <img
