@@ -236,8 +236,20 @@ export function Layout() {
             onClick={() => setSettingsOpen(false)}
             className="fixed inset-0 z-40 sm:hidden"
           />
-          <div className="fixed top-20 right-3 z-40 rounded-3xl border border-white/30 bg-sky/90 p-4 shadow-xl backdrop-blur-xl sm:hidden">
+          <div className="fixed top-20 right-3 z-40 flex items-center gap-2 rounded-3xl border border-white/30 bg-sky/90 p-3 shadow-xl backdrop-blur-xl sm:hidden">
             <SettingsControls />
+            <button
+              type="button"
+              onClick={() => {
+                setSettingsOpen(false);
+                doLogout();
+              }}
+              aria-label={t("nav.logout")}
+              title={t("nav.logout")}
+              className="grid size-9 shrink-0 place-items-center rounded-full border border-white text-white transition hover:bg-white/25"
+            >
+              <LogOut className="size-5" />
+            </button>
           </div>
         </>
       ) : null}
