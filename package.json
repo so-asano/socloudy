@@ -16,6 +16,7 @@
     "@atproto/api": "^0.20.16",
     "@capacitor/core": "^8.4.0",
     "@capacitor/ios": "^8.4.0",
+    "@capacitor/keyboard": "^8.0.5",
     "@capacitor/status-bar": "^8.0.2",
     "@tanstack/react-query": "^5.62.7",
     "hls.js": "^1.6.16",
