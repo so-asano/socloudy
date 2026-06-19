@@ -91,7 +91,7 @@ export function Lightbox() {
         type="button"
         aria-label="close"
         onClick={() => setState(null)}
-        className="absolute top-4 right-4 grid size-10 place-items-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
+        className="absolute top-[calc(1rem_+_var(--top-inset))] right-4 grid size-10 place-items-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
       >
         <X className="size-6" />
       </button>
@@ -118,7 +118,7 @@ export function Lightbox() {
       ) : null}
 
       {images.length > 1 ? (
-        <span className="-translate-x-1/2 absolute bottom-5 left-1/2 rounded-full bg-white/15 px-3 py-1 font-medium text-sm text-white">
+        <span className="-translate-x-1/2 absolute bottom-[calc(1.25rem_+_env(safe-area-inset-bottom,0px))] left-1/2 rounded-full bg-white/15 px-3 py-1 font-medium text-sm text-white">
           {index + 1} / {images.length}
         </span>
       ) : null}
