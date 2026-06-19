@@ -241,7 +241,7 @@ function Action({
       }`}
     >
       <Icon className="size-[18px]" fill={fill ? "currentColor" : "none"} />
-      {count ? <span className="text-xs tabular-nums">{count}</span> : null}
+      {count ? <span className="text-xs tabular-nums">{count.toLocaleString()}</span> : null}
     </button>
   );
 }

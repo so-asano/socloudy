@@ -93,7 +93,8 @@ function FollowButton({ profile }: { profile: AppBskyActorDefs.ProfileViewDetail
 function Stat({ n, label }: { n?: number; label: string }) {
   return (
     <span>
-      <span className="font-bold">{n ?? 0}</span> <span className="text-zinc-500">{label}</span>
+      <span className="font-bold">{(n ?? 0).toLocaleString()}</span>{" "}
+      <span className="text-zinc-500">{label}</span>
     </span>
   );
 }
