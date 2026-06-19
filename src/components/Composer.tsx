@@ -61,7 +61,10 @@ export function Composer() {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setState({ open: false });
+      // ignore Escape used to cancel an IME conversion (isComposing / keyCode 229)
+      if (e.key === "Escape" && !e.isComposing && e.keyCode !== 229) {
+        setState({ open: false });
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
