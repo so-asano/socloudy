@@ -10,10 +10,15 @@
 
 html {
   color-scheme: light;
+  /* base colour behind the body so overscroll / splash never flashes white */
+  background-color: #3f8bea;
+  /* reserve the scrollbar gutter so the centred header pill doesn't shift on scroll */
+  scrollbar-gutter: stable;
 }
 
 html.dark {
   color-scheme: dark;
+  background-color: #0a0e14;
 }
 
 /* Deep sky backdrop; chrome text is white, post text stays dark inside the white clouds. */
