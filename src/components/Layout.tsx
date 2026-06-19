@@ -37,7 +37,9 @@ export function Layout() {
   const qc = useQueryClient();
   const [feedsOpen, setFeedsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const onFeed = useLocation().pathname.startsWith("/feed/");
+  const pathname = useLocation().pathname;
+  const onFeed = pathname.startsWith("/feed/");
+  const onProfile = pathname.startsWith("/profile/");
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `grid size-12 place-items-center rounded-full transition ${
@@ -282,7 +284,7 @@ export function Layout() {
       )}
 
       {/* Mobile bottom bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t bg-sky-dark/30 pt-3.5 pb-[calc(0.875rem_+_env(safe-area-inset-bottom,0px))] backdrop-blur-xl sm:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t bg-sky-dark/30 pt-3.5 pb-[max(0.875rem,env(safe-area-inset-bottom,0px))] backdrop-blur-xl sm:hidden">
         <MobileLink
           to="/"
           end
@@ -324,6 +326,7 @@ export function Layout() {
             to={`/profile/${me.handle}`}
             icon={User}
             label={t("nav.profile")}
+            forceActive={onProfile}
             suppressActive={feedsOpen}
           />
         ) : null}
@@ -390,6 +393,7 @@ function MobileLink({
   badge = 0,
   onClick,
   suppressActive = false,
+  forceActive = false,
 }: {
   to: string;
   icon: LucideIcon;
@@ -399,6 +403,8 @@ function MobileLink({
   onClick?: () => void;
   /** force the inactive look even on the current route (e.g. while a sheet owns the active state) */
   suppressActive?: boolean;
+  /** force the active look regardless of route match (e.g. profile tab on any /profile/*) */
+  forceActive?: boolean;
 }): ReactNode {
   return (
     <NavLink
@@ -408,7 +414,7 @@ function MobileLink({
       onClick={onClick}
       className={({ isActive }) =>
         `relative grid size-11 place-items-center rounded-full transition ${
-          isActive && !suppressActive ? "bg-white text-sky" : "text-white"
+          (isActive || forceActive) && !suppressActive ? "bg-white text-sky" : "text-white"
         }`
       }
     >
