@@ -1,6 +1,10 @@
-# verycloudy
+# socloudy
 
-Bluesky (AT Protocol) クライアント。bun + React 19 + React Router (SPA) + Tailwind v4。
+軽量でかわいい、ちょっと風変わりな Bluesky (AT Protocol) クライアント。
+A lightweight, cute, quirky Bluesky client.
+
+投稿・通知・検索・プロフィールを、青空にふわふわ浮かぶ雲のカードとして表示します。
+bun + React 19 + React Router (SPA) + Tailwind v4。PWA / iOS (Capacitor) 対応。
 
 ## スタック
 

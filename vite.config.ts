@@ -17,7 +17,7 @@ const pwa: PluginOption[] = isCapacitor
         manifest: {
           name: "socloudy",
           short_name: "socloudy",
-          description: "A cloudy Bluesky client",
+          description: "A lightweight, cute, quirky Bluesky client",
           lang: "ja",
           id: "/",
           start_url: "/",

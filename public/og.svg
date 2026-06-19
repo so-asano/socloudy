@@ -13,5 +13,5 @@
     <text x="600" y="430" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif"
       font-size="84" font-weight="800" fill="#ffffff">socloudy</text>
     <text x="600" y="490" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif"
-      font-size="32" fill="#ffffff" opacity="0.9">A cloudy Bluesky client</text>
+      font-size="32" fill="#ffffff" opacity="0.9">A lightweight, cute, quirky Bluesky client</text>
   </svg>
