@@ -3,23 +3,33 @@ import { useAtom } from "jotai";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-/** Fullscreen image viewer. Click outside / Escape to close; arrows to navigate. */
+/**
+ * Fullscreen image viewer. Multiple images live in a horizontal scroll-snap
+ * pager (native swipe). Click outside the image / Escape to close; arrows or the
+ * side buttons page through.
+ */
 export function Lightbox() {
   const [state, setState] = useAtom(lightboxAtom);
-  const swipeStart = useRef<number | null>(null);
+  const scroller = useRef<HTMLDivElement>(null);
+  const didInit = useRef(false);
 
+  // lock background scroll + keyboard controls while open
   useEffect(() => {
-    if (!state) return;
-    // lock the page scroll behind the overlay (gutter is reserved, so no width shift)
+    if (!state) {
+      didInit.current = false;
+      return;
+    }
     const root = document.documentElement;
     const prevOverflow = root.style.overflow;
     root.style.overflow = "hidden";
+    const page = (delta: number) => {
+      const el = scroller.current;
+      if (el) el.scrollBy({ left: delta * el.clientWidth, behavior: "smooth" });
+    };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setState(null);
-      else if (e.key === "ArrowRight")
-        setState((s) => (s ? { ...s, index: Math.min(s.index + 1, s.images.length - 1) } : s));
-      else if (e.key === "ArrowLeft")
-        setState((s) => (s ? { ...s, index: Math.max(s.index - 1, 0) } : s));
+      else if (e.key === "ArrowRight") page(1);
+      else if (e.key === "ArrowLeft") page(-1);
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -28,48 +38,54 @@ export function Lightbox() {
     };
   }, [state, setState]);
 
+  // jump to the requested image when the lightbox opens
+  useEffect(() => {
+    if (!state || didInit.current) return;
+    const el = scroller.current;
+    if (el) {
+      el.scrollLeft = state.index * el.clientWidth;
+      didInit.current = true;
+    }
+  }, [state]);
+
   if (!state) return null;
   const { images, index } = state;
-  const src = images[index];
-  const hasPrev = index > 0;
-  const hasNext = index < images.length - 1;
-  const move = (delta: number) =>
-    setState((s) =>
-      s ? { ...s, index: Math.max(0, Math.min(s.index + delta, s.images.length - 1)) } : s,
-    );
-  const step = (e: React.MouseEvent, delta: number) => {
-    e.stopPropagation();
-    move(delta);
-  };
 
-  // horizontal swipe on the image navigates between images
-  const onTouchStart = (e: React.TouchEvent) => {
-    swipeStart.current = e.touches[0]?.clientX ?? null;
+  const onScroll = () => {
+    const el = scroller.current;
+    if (!el) return;
+    const i = Math.round(el.scrollLeft / el.clientWidth);
+    if (i !== index) setState((s) => (s ? { ...s, index: i } : s));
   };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    const start = swipeStart.current;
-    swipeStart.current = null;
-    if (start == null) return;
-    const dx = (e.changedTouches[0]?.clientX ?? start) - start;
-    if (Math.abs(dx) > 50) move(dx < 0 ? 1 : -1);
+  const page = (delta: number) => {
+    const el = scroller.current;
+    if (el) el.scrollBy({ left: delta * el.clientWidth, behavior: "smooth" });
   };
 
   return (
-    <div className="fixed top-0 left-0 z-[200] grid h-dvh w-screen place-items-center bg-black/85 p-6 backdrop-blur-sm">
-      {/* backdrop: clicking outside the image closes */}
-      <button
-        type="button"
-        aria-label="close"
-        onClick={() => setState(null)}
-        className="absolute inset-0 cursor-zoom-out"
-      />
-      <img
-        src={src}
-        alt=""
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-        className="relative max-h-[92vh] max-w-[92vw] touch-pan-y rounded-2xl object-contain"
-      />
+    <div className="fixed top-0 left-0 z-[200] h-dvh w-screen bg-black/85 backdrop-blur-sm">
+      <div
+        ref={scroller}
+        onScroll={onScroll}
+        className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {images.map((img, i) => (
+          <button
+            // biome-ignore lint/suspicious/noArrayIndexKey: positional slides
+            key={i}
+            type="button"
+            aria-label="close"
+            onClick={() => setState(null)}
+            className="flex w-full shrink-0 cursor-zoom-out snap-center items-center justify-center p-6"
+          >
+            <img
+              src={img}
+              alt=""
+              className="max-h-[92vh] max-w-[92vw] rounded-2xl object-contain"
+            />
+          </button>
+        ))}
+      </div>
 
       <button
         type="button"
@@ -80,21 +96,21 @@ export function Lightbox() {
         <X className="size-6" />
       </button>
 
-      {hasPrev ? (
+      {index > 0 ? (
         <button
           type="button"
           aria-label="previous"
-          onClick={(e) => step(e, -1)}
+          onClick={() => page(-1)}
           className="-translate-y-1/2 absolute top-1/2 left-4 grid size-11 place-items-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
         >
           <ChevronLeft className="size-6" />
         </button>
       ) : null}
-      {hasNext ? (
+      {index < images.length - 1 ? (
         <button
           type="button"
           aria-label="next"
-          onClick={(e) => step(e, 1)}
+          onClick={() => page(1)}
           className="-translate-y-1/2 absolute top-1/2 right-4 grid size-11 place-items-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
         >
           <ChevronRight className="size-6" />
