@@ -270,7 +270,7 @@ export function Layout() {
       )}
 
       {/* Mobile bottom bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t py-3.5 backdrop-blur-xl sm:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t bg-sky-dark/30 py-3.5 backdrop-blur-xl sm:hidden">
         <MobileLink
           to="/"
           end
