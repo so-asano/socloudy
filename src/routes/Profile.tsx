@@ -42,14 +42,12 @@ export function ProfilePage() {
                 />
               ) : null}
               <h2 className="mt-3 font-bold text-xl">{profile.displayName ?? profile.handle}</h2>
-              <p className="flex items-center gap-2 text-zinc-500">
-                @{profile.handle}
-                {profile.viewer?.followedBy ? (
-                  <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-xs">
-                    {t("profile.followsYou")}
-                  </span>
-                ) : null}
-              </p>
+              <p className="text-zinc-500">@{profile.handle}</p>
+              {profile.viewer?.followedBy ? (
+                <span className="mt-1 inline-block rounded bg-black/[0.06] px-1.5 py-0.5 text-xs text-zinc-600 dark:bg-white/15 dark:text-zinc-200">
+                  {t("profile.followsYou")}
+                </span>
+              ) : null}
               {profile.description ? (
                 <p className="mt-2 whitespace-pre-wrap text-[15px]">{profile.description}</p>
               ) : null}
