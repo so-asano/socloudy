@@ -19,7 +19,7 @@ export function PageHeader({
 }) {
   const handleClick = onTitleClick ?? (() => window.scrollTo({ top: 0, behavior: "smooth" }));
   return (
-    <div className="pointer-events-none sticky top-3 z-30 flex transform-gpu justify-center gap-2 px-4">
+    <div className="pointer-events-none fixed top-3 right-0 left-0 z-30 flex justify-center gap-2 px-4 sm:left-64">
       {/* leading controls (e.g. a back button) sit as their own pills beside the title */}
       {children}
       {/* the whole title pill is a button: tapping it scrolls to top (or loads new posts) */}
