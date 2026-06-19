@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   Bell,
+  Bookmark,
   Cloud,
   Home,
   List,
@@ -21,7 +22,7 @@ import {
   Settings,
   User,
 } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { Fragment, type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -104,17 +105,24 @@ export function Layout() {
         <nav className="feed-list my-6 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-8">
           {feeds.map((f) =>
             f.type === "timeline" ? (
-              <NavLink
-                key={f.key}
-                to="/"
-                end
-                title={t("nav.following")}
-                onClick={goHome}
-                className={feedRowClass}
-              >
-                <FeedIcon feed={f} className="size-7" />
-                <span className="truncate">{t("nav.following")}</span>
-              </NavLink>
+              <Fragment key={f.key}>
+                <NavLink
+                  to="/"
+                  end
+                  title={t("nav.following")}
+                  onClick={goHome}
+                  className={feedRowClass}
+                >
+                  <FeedIcon feed={f} className="size-7" />
+                  <span className="truncate">{t("nav.following")}</span>
+                </NavLink>
+                <NavLink to="/bookmarks" title={t("nav.bookmarks")} className={feedRowClass}>
+                  <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white bg-white/20">
+                    <Bookmark className="size-4" />
+                  </span>
+                  <span className="truncate">{t("nav.bookmarks")}</span>
+                </NavLink>
+              </Fragment>
             ) : (
               <NavLink
                 key={f.key}
@@ -179,19 +187,30 @@ export function Layout() {
           <div className="fixed inset-x-3 bottom-20 z-40 max-h-[55vh] overflow-y-auto rounded-3xl border border-white/30 bg-sky/90 p-2 shadow-xl backdrop-blur-xl sm:hidden">
             {feeds.map((f) =>
               f.type === "timeline" ? (
-                <NavLink
-                  key={f.key}
-                  to="/"
-                  end
-                  onClick={() => {
-                    setFeedsOpen(false);
-                    goHome();
-                  }}
-                  className={feedSheetRowClass}
-                >
-                  <FeedIcon feed={f} className="size-8" />
-                  <span className="truncate">{t("nav.following")}</span>
-                </NavLink>
+                <Fragment key={f.key}>
+                  <NavLink
+                    to="/"
+                    end
+                    onClick={() => {
+                      setFeedsOpen(false);
+                      goHome();
+                    }}
+                    className={feedSheetRowClass}
+                  >
+                    <FeedIcon feed={f} className="size-8" />
+                    <span className="truncate">{t("nav.following")}</span>
+                  </NavLink>
+                  <NavLink
+                    to="/bookmarks"
+                    onClick={() => setFeedsOpen(false)}
+                    className={feedSheetRowClass}
+                  >
+                    <span className="grid size-8 shrink-0 place-items-center rounded-full border border-white bg-white/20">
+                      <Bookmark className="size-4" />
+                    </span>
+                    <span className="truncate">{t("nav.bookmarks")}</span>
+                  </NavLink>
+                </Fragment>
               ) : (
                 <NavLink
                   key={f.key}

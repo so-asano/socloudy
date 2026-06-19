@@ -8,11 +8,15 @@
     "post": "投稿",
     "feeds": "フィード",
     "following": "フォロー中",
+    "bookmarks": "ブックマーク",
     "settings": "設定",
     "logout": "ログアウト"
   },
   "feeds": {
     "empty": "ピンどめしたフィードがありません。"
+  },
+  "bookmarks": {
+    "empty": "ブックマークはまだありません。"
   },
   "login": {
     "title": "ログイン",
@@ -34,6 +38,7 @@
     "reply": "返信",
     "repost": "リポスト",
     "like": "いいね",
+    "bookmark": "ブックマーク",
     "delete": "削除",
     "replyingTo": "{{handle}} への返信",
     "placeholder": "いまどうしてる？",

@@ -56,6 +56,23 @@ export function useFeedPosts(feed: string) {
   });
 }
 
+/** Resolve bookmarked post URIs to full posts, preserving the given order. */
+export function useBookmarkedPosts(uris: string[]) {
+  return useQuery({
+    queryKey: ["bookmarks", uris],
+    enabled: uris.length > 0,
+    queryFn: async () => {
+      const byUri: Record<string, PostView> = {};
+      for (let i = 0; i < uris.length; i += 25) {
+        const res = await agent.getPosts({ uris: uris.slice(i, i + 25) });
+        for (const p of res.data.posts) byUri[p.uri] = p;
+      }
+      // keep the bookmark order; drop any that no longer resolve (deleted)
+      return uris.map((u) => byUri[u]).filter((p): p is PostView => !!p);
+    },
+  });
+}
+
 export type SavedFeed = {
   /** stable key from the saved-feeds preference */
   key: string;

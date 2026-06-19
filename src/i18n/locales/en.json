@@ -8,11 +8,15 @@
     "post": "Post",
     "feeds": "Feeds",
     "following": "Following",
+    "bookmarks": "Bookmarks",
     "settings": "Settings",
     "logout": "Log out"
   },
   "feeds": {
     "empty": "No pinned feeds."
+  },
+  "bookmarks": {
+    "empty": "No bookmarks yet."
   },
   "login": {
     "title": "Log in",
@@ -34,6 +38,7 @@
     "reply": "Reply",
     "repost": "Repost",
     "like": "Like",
+    "bookmark": "Bookmark",
     "delete": "Delete",
     "replyingTo": "Replying to {{handle}}",
     "placeholder": "What's up?",
