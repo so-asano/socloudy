@@ -12,7 +12,9 @@ import {
 } from "@/lib/queries";
 import { cloudSeed, threadPath, timeAgo } from "@/lib/util";
 import {
+  AppBskyEmbedExternal,
   AppBskyEmbedImages,
+  AppBskyEmbedRecordWithMedia,
   type AppBskyFeedPost,
   type AppBskyNotificationListNotifications,
 } from "@atproto/api";
@@ -133,8 +135,7 @@ function NotificationRow({ n, subject }: { n: Notification; subject?: Subject })
 
   const post = subject?.post;
   const subjectText = post ? (post.record as AppBskyFeedPost.Record).text : undefined;
-  const subjectImg =
-    post && AppBskyEmbedImages.isView(post.embed) ? post.embed.images[0]?.thumb : undefined;
+  const { img: subjectImg, external: subjectExternal } = subjectMedia(post?.embed);
 
   const ref = useCloudMotion<HTMLDivElement>(cloudSeed(n.uri));
 
@@ -157,13 +158,30 @@ function NotificationRow({ n, subject }: { n: Notification; subject?: Subject })
           </div>
         </div>
         {/* the post or feed this notification is about */}
-        {subjectText || subjectImg ? (
+        {subjectText || subjectImg || subjectExternal ? (
           <div className="mt-2 space-y-2 rounded-2xl bg-black/5 px-3 py-2 dark:bg-white/10">
             {subjectText ? (
               <p className="line-clamp-4 whitespace-pre-wrap text-[15px]">{subjectText}</p>
             ) : null}
             {subjectImg ? (
               <img src={subjectImg} alt="" className="max-h-40 w-full rounded-xl object-cover" />
+            ) : null}
+            {subjectExternal ? (
+              <div className="flex gap-2 rounded-xl bg-black/[0.06] p-2 dark:bg-white/10">
+                {subjectExternal.thumb ? (
+                  <img
+                    src={subjectExternal.thumb}
+                    alt=""
+                    className="size-12 shrink-0 rounded-lg object-cover"
+                  />
+                ) : null}
+                <div className="min-w-0">
+                  <p className="line-clamp-1 text-xs text-zinc-500">
+                    {hostOf(subjectExternal.uri)}
+                  </p>
+                  <p className="line-clamp-2 font-medium text-[13px]">{subjectExternal.title}</p>
+                </div>
+              </div>
             ) : null}
           </div>
         ) : subject?.feed ? (
@@ -190,4 +208,31 @@ function NotificationRow({ n, subject }: { n: Notification; subject?: Subject })
       )}
     </div>
   );
+}
+
+type SubjectExternal = { uri: string; title: string; thumb?: string };
+
+/** Extract a thumbnail or external (OGP) card from a subject post's embed. */
+function subjectMedia(embed: unknown): { img?: string; external?: SubjectExternal } {
+  if (!embed || typeof embed !== "object") return {};
+  let media: unknown = embed;
+  if (AppBskyEmbedRecordWithMedia.isView(media)) {
+    media = (media as AppBskyEmbedRecordWithMedia.View).media;
+  }
+  if (AppBskyEmbedImages.isView(media)) {
+    return { img: (media as AppBskyEmbedImages.View).images[0]?.thumb };
+  }
+  if (AppBskyEmbedExternal.isView(media)) {
+    const ex = (media as AppBskyEmbedExternal.View).external;
+    return { external: { uri: ex.uri, title: ex.title, thumb: ex.thumb } };
+  }
+  return {};
+}
+
+function hostOf(uri: string): string {
+  try {
+    return new URL(uri).host;
+  } catch {
+    return uri;
+  }
 }
