@@ -4,9 +4,10 @@ import { Avatar } from "@/components/Avatar";
 import { CloudShape } from "@/components/CloudShape";
 import { Spinner } from "@/components/Spinner";
 import { useCreatePost } from "@/lib/queries";
+import { RichText } from "@atproto/api";
 import { useAtom, useAtomValue } from "jotai";
 import { ChevronDown, Image as ImageIcon, Languages, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const MAX_CHARS = 300;
@@ -39,6 +40,16 @@ export function Composer() {
   const [lang, setLang] = useState(() => i18n.resolvedLanguage ?? "en");
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const textarea = useRef<HTMLTextAreaElement>(null);
+  const backdrop = useRef<HTMLDivElement>(null);
+
+  // Live rich text: detect facets locally (no network) for highlighting, and
+  // count by graphemes (the real post limit) rather than UTF-16 length.
+  const rt = useMemo(() => {
+    const r = new RichText({ text });
+    r.detectFacetsWithoutResolution();
+    return r;
+  }, [text]);
 
   const open = state.open;
   const isReply = state.open && !!state.reply;
@@ -79,7 +90,7 @@ export function Composer() {
     setState({ open: false });
   };
 
-  const remaining = MAX_CHARS - text.length;
+  const remaining = MAX_CHARS - rt.graphemeLength;
   const canSubmit =
     (text.trim().length > 0 || images.length > 0) && remaining >= 0 && !createPost.isPending;
 
@@ -165,14 +176,39 @@ export function Composer() {
 
           <div className="flex gap-3">
             <Avatar src={me?.avatar} alt={me?.handle} size={40} />
-            <textarea
-              autoFocus
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder={isReply ? t("post.replyPlaceholder") : t("post.placeholder")}
-              rows={4}
-              className="flex-1 resize-none bg-transparent text-[15px] outline-none placeholder:text-zinc-400"
-            />
+            <div className="relative flex-1">
+              {/* highlight overlay: mirrors the textarea, colouring detected facets */}
+              <div
+                ref={backdrop}
+                aria-hidden
+                className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words text-[15px] leading-6 [overflow-wrap:anywhere]"
+              >
+                {Array.from(rt.segments()).map((seg, i) => (
+                  <span
+                    // biome-ignore lint/suspicious/noArrayIndexKey: segments are positional and re-derived each render
+                    key={i}
+                    className={seg.mention || seg.link || seg.tag ? "text-sky" : undefined}
+                  >
+                    {seg.text}
+                  </span>
+                ))}
+                {"​"}
+              </div>
+              <textarea
+                ref={textarea}
+                autoFocus
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onScroll={() => {
+                  if (backdrop.current && textarea.current) {
+                    backdrop.current.scrollTop = textarea.current.scrollTop;
+                  }
+                }}
+                placeholder={isReply ? t("post.replyPlaceholder") : t("post.placeholder")}
+                rows={4}
+                className="relative block w-full resize-none overflow-auto bg-transparent text-[15px] text-transparent leading-6 caret-zinc-900 outline-none placeholder:text-zinc-400 [overflow-wrap:anywhere] dark:caret-zinc-100"
+              />
+            </div>
           </div>
 
           {images.length > 0 ? (
