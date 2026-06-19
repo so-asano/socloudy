@@ -13,25 +13,30 @@ import { useSetAtom } from "jotai";
 export function PostEmbed({ embed }: { embed: unknown }) {
   if (!embed || typeof embed !== "object") return null;
 
+  // The lexicon isView() guards now narrow to a $type marker only, so cast to the
+  // full view type after each check.
   if (AppBskyEmbedImages.isView(embed)) {
-    return <ImageGrid images={embed.images} />;
+    return <ImageGrid images={(embed as AppBskyEmbedImages.View).images} />;
   }
   if (AppBskyEmbedVideo.isView(embed)) {
-    return <VideoEmbed video={embed} />;
+    return <VideoEmbed video={embed as AppBskyEmbedVideo.View} />;
   }
   if (AppBskyEmbedExternal.isView(embed)) {
-    return <ExternalCard external={embed.external} />;
+    return <ExternalCard external={(embed as AppBskyEmbedExternal.View).external} />;
   }
   if (AppBskyEmbedRecordWithMedia.isView(embed)) {
+    const e = embed as AppBskyEmbedRecordWithMedia.View;
     return (
       <div className="space-y-2">
-        <PostEmbed embed={embed.media} />
-        {AppBskyEmbedRecord.isView(embed.record) ? <QuoteCard record={embed.record} /> : null}
+        <PostEmbed embed={e.media} />
+        {AppBskyEmbedRecord.isView(e.record) ? (
+          <QuoteCard record={e.record as AppBskyEmbedRecord.View} />
+        ) : null}
       </div>
     );
   }
   if (AppBskyEmbedRecord.isView(embed)) {
-    return <QuoteCard record={embed} />;
+    return <QuoteCard record={embed as AppBskyEmbedRecord.View} />;
   }
   return null;
 }
@@ -106,8 +111,8 @@ function ExternalCard({ external }: { external: AppBskyEmbedExternal.ViewExterna
 }
 
 function QuoteCard({ record }: { record: AppBskyEmbedRecord.View }) {
-  const r = record.record;
-  if (!AppBskyEmbedRecord.isViewRecord(r)) return null;
+  if (!AppBskyEmbedRecord.isViewRecord(record.record)) return null;
+  const r = record.record as AppBskyEmbedRecord.ViewRecord;
   const value = r.value as { text?: string };
   const images = quotedImages(r.embeds);
   return (
@@ -148,9 +153,10 @@ function QuoteCard({ record }: { record: AppBskyEmbedRecord.View }) {
 function quotedImages(embeds: unknown): AppBskyEmbedImages.ViewImage[] {
   if (!Array.isArray(embeds)) return [];
   for (const e of embeds) {
-    if (AppBskyEmbedImages.isView(e)) return e.images;
-    if (AppBskyEmbedRecordWithMedia.isView(e) && AppBskyEmbedImages.isView(e.media)) {
-      return e.media.images;
+    if (AppBskyEmbedImages.isView(e)) return (e as AppBskyEmbedImages.View).images;
+    if (AppBskyEmbedRecordWithMedia.isView(e)) {
+      const media = (e as AppBskyEmbedRecordWithMedia.View).media;
+      if (AppBskyEmbedImages.isView(media)) return (media as AppBskyEmbedImages.View).images;
     }
   }
   return [];

@@ -1,15 +1,14 @@
 import { sessionAtom } from "@/atoms/auth";
-import { bookmarksAtom } from "@/atoms/bookmarks";
 import { composerAtom } from "@/atoms/composer";
 import { Avatar } from "@/components/Avatar";
 import { CloudShape } from "@/components/CloudShape";
 import { PostEmbed } from "@/components/PostEmbed";
 import { RichText } from "@/components/RichText";
 import { useCloudMotion } from "@/lib/cloudMotion";
-import { useDeletePost, useToggleLike, useToggleRepost } from "@/lib/queries";
+import { useDeletePost, useToggleBookmark, useToggleLike, useToggleRepost } from "@/lib/queries";
 import { cloudSeed, threadPath, timeAgo } from "@/lib/util";
 import type { AppBskyFeedDefs, AppBskyFeedPost } from "@atproto/api";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import {
   Bookmark,
   Heart,
@@ -39,9 +38,9 @@ export function PostCard({
   const { t, i18n } = useTranslation();
   const setComposer = useSetAtom(composerAtom);
   const me = useAtomValue(sessionAtom);
-  const [bookmarks, setBookmarks] = useAtom(bookmarksAtom);
   const toggleLike = useToggleLike();
   const toggleRepost = useToggleRepost();
+  const toggleBookmark = useToggleBookmark();
   const deletePost = useDeletePost();
 
   const record = post.record as AppBskyFeedPost.Record;
@@ -84,9 +83,8 @@ export function PostCard({
 
   const onDelete = () => deletePost.mutate(post.uri);
 
-  const bookmarked = bookmarks.includes(post.uri);
-  const onBookmark = () =>
-    setBookmarks((prev) => (bookmarked ? prev.filter((u) => u !== post.uri) : [post.uri, ...prev]));
+  const bookmarked = !!post.viewer?.bookmarked;
+  const onBookmark = () => toggleBookmark.mutate(post);
   const repostedBy =
     reason && "by" in reason ? (reason.by as { displayName?: string; handle: string }) : null;
 
@@ -190,6 +188,7 @@ export function PostCard({
             active={bookmarked}
             fill={bookmarked}
             activeClass="text-sky"
+            count={post.bookmarkCount}
             onClick={onBookmark}
           />
           {isMine ? (

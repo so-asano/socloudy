@@ -11,7 +11,7 @@
     "format": "biome format --write ."
   },
   "dependencies": {
-    "@atproto/api": "^0.13.35",
+    "@atproto/api": "^0.20.16",
     "@tanstack/react-query": "^5.62.7",
     "hls.js": "^1.6.16",
     "i18next": "^26.3.1",

@@ -56,20 +56,16 @@ export function useFeedPosts(feed: string) {
   });
 }
 
-/** Resolve bookmarked post URIs to full posts, preserving the given order. */
-export function useBookmarkedPosts(uris: string[]) {
-  return useQuery({
-    queryKey: ["bookmarks", uris],
-    enabled: uris.length > 0,
-    queryFn: async () => {
-      const byUri: Record<string, PostView> = {};
-      for (let i = 0; i < uris.length; i += 25) {
-        const res = await agent.getPosts({ uris: uris.slice(i, i + 25) });
-        for (const p of res.data.posts) byUri[p.uri] = p;
-      }
-      // keep the bookmark order; drop any that no longer resolve (deleted)
-      return uris.map((u) => byUri[u]).filter((p): p is PostView => !!p);
+/** The user's bookmarks (app.bsky.bookmark.getBookmarks), newest first. */
+export function useBookmarks() {
+  return useInfiniteQuery({
+    queryKey: ["bookmarks"],
+    initialPageParam: undefined as string | undefined,
+    queryFn: async ({ pageParam }) => {
+      const res = await agent.app.bsky.bookmark.getBookmarks({ limit: 30, cursor: pageParam });
+      return res.data;
     },
+    getNextPageParam: (last) => last.cursor,
   });
 }
 
@@ -414,6 +410,37 @@ export function useToggleRepost() {
         p.repostCount = (p.repostCount ?? 0) + (reposted ? 1 : -1);
         p.viewer = { ...p.viewer, repost: post.viewer?.repost };
       });
+    },
+  });
+}
+
+/** Bookmark / un-bookmark a post via app.bsky.bookmark, patching cached copies. */
+export function useToggleBookmark() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (post: PostView) => {
+      if (post.viewer?.bookmarked) {
+        await agent.app.bsky.bookmark.deleteBookmark({ uri: post.uri });
+      } else {
+        await agent.app.bsky.bookmark.createBookmark({ uri: post.uri, cid: post.cid });
+      }
+    },
+    onMutate: async (post) => {
+      const was = !!post.viewer?.bookmarked;
+      patchCachedPost(qc, post.uri, (p) => {
+        p.bookmarkCount = Math.max(0, (p.bookmarkCount ?? 0) + (was ? -1 : 1));
+        p.viewer = { ...p.viewer, bookmarked: !was };
+      });
+    },
+    onError: (_e, post) => {
+      const was = !!post.viewer?.bookmarked;
+      patchCachedPost(qc, post.uri, (p) => {
+        p.bookmarkCount = Math.max(0, (p.bookmarkCount ?? 0) + (was ? 1 : -1));
+        p.viewer = { ...p.viewer, bookmarked: was };
+      });
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["bookmarks"] });
     },
   });
 }
