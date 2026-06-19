@@ -1,5 +1,6 @@
 import { agent } from "@/lib/agent";
 import type { AppBskyActorDefs, AppBskyFeedDefs, AppBskyFeedPost } from "@atproto/api";
+import { RichText } from "@atproto/api";
 import {
   type InfiniteData,
   useInfiniteQuery,
@@ -428,12 +429,19 @@ export function useCreatePost() {
       text,
       reply,
       images,
+      langs,
     }: {
       text: string;
       reply?: ReplyTarget;
       images?: ImageDraft[];
+      langs?: string[];
     }) => {
-      const record: Partial<AppBskyFeedPost.Record> & { text: string } = { text };
+      // detect mentions / links / hashtags and resolve handles to DIDs
+      const rt = new RichText({ text });
+      await rt.detectFacets(agent);
+      const record: Partial<AppBskyFeedPost.Record> & { text: string } = { text: rt.text };
+      if (rt.facets?.length) record.facets = rt.facets;
+      if (langs && langs.length > 0) record.langs = langs;
       if (reply) record.reply = reply;
       if (images && images.length > 0) {
         record.embed = await buildImageEmbed(images);

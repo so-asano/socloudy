@@ -48,7 +48,8 @@
     "altPlaceholder": "画像の説明（任意）",
     "removeImage": "画像を削除",
     "tooManyImages": "画像は最大4枚までです。",
-    "uploadFailed": "画像のアップロードに失敗しました。"
+    "uploadFailed": "画像のアップロードに失敗しました。",
+    "language": "投稿の言語"
   },
   "profile": {
     "posts": "投稿",

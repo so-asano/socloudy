@@ -5,24 +5,38 @@ import { CloudShape } from "@/components/CloudShape";
 import { Spinner } from "@/components/Spinner";
 import { useCreatePost } from "@/lib/queries";
 import { useAtom, useAtomValue } from "jotai";
-import { Image as ImageIcon, X } from "lucide-react";
+import { Image as ImageIcon, Languages, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const MAX_CHARS = 300;
 const MAX_IMAGES = 4;
 
+// Languages offered for tagging a post (BCP-47), with native labels.
+const POST_LANGUAGES = [
+  { code: "ja", label: "日本語" },
+  { code: "en", label: "English" },
+  { code: "ko", label: "한국어" },
+  { code: "zh", label: "中文" },
+  { code: "es", label: "Español" },
+  { code: "fr", label: "Français" },
+  { code: "de", label: "Deutsch" },
+  { code: "pt", label: "Português" },
+] as const;
+
 type ImageItem = { id: string; file: File; url: string; alt: string };
 
 /** Global post/reply composer modal, driven by composerAtom. Supports up to 4 images. */
 export function Composer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [state, setState] = useAtom(composerAtom);
   const me = useAtomValue(sessionAtom);
   const createPost = useCreatePost();
   const [text, setText] = useState("");
   const [images, setImages] = useState<ImageItem[]>([]);
   const [error, setError] = useState<string | null>(null);
+  // default the post language to the current UI language
+  const [lang, setLang] = useState(() => i18n.resolvedLanguage ?? "en");
   const fileInput = useRef<HTMLInputElement>(null);
 
   const open = state.open;
@@ -31,6 +45,7 @@ export function Composer() {
   const reset = () => {
     setText("");
     setError(null);
+    setLang(i18n.resolvedLanguage ?? "en");
     setImages((prev) => {
       for (const img of prev) URL.revokeObjectURL(img.url);
       return [];
@@ -98,6 +113,7 @@ export function Composer() {
         text: text.trim(),
         reply: state.reply,
         images: images.map(({ file, alt }) => ({ file, alt })),
+        langs: [lang],
       });
       close();
     } catch {
@@ -205,6 +221,22 @@ export function Composer() {
               >
                 <ImageIcon className="size-5" />
               </button>
+              <label className="flex items-center gap-1 rounded-full px-2 py-1 text-sky transition hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                <Languages className="size-5 shrink-0" />
+                <span className="sr-only">{t("post.language")}</span>
+                <select
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value)}
+                  aria-label={t("post.language")}
+                  className="cursor-pointer bg-transparent text-sm outline-none"
+                >
+                  {POST_LANGUAGES.map((l) => (
+                    <option key={l.code} value={l.code} className="text-zinc-900">
+                      {l.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
               {error ? <span className="text-red-500 text-sm">{error}</span> : null}
             </div>
             <span

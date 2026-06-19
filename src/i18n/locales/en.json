@@ -48,7 +48,8 @@
     "altPlaceholder": "Describe the image (optional)",
     "removeImage": "Remove image",
     "tooManyImages": "Up to 4 images.",
-    "uploadFailed": "Failed to upload image."
+    "uploadFailed": "Failed to upload image.",
+    "language": "Post language"
   },
   "profile": {
     "posts": "Posts",
