@@ -14,6 +14,14 @@ html {
   background-color: #3f8bea;
   /* reserve the scrollbar gutter so the centred header pill doesn't shift on scroll */
   scrollbar-gutter: stable;
+  /* top inset for fixed chrome; on web this is just the safe-area */
+  --top-inset: env(safe-area-inset-top, 0px);
+}
+
+/* Native (Capacitor) shell: guarantee a status-bar-sized top inset even when the
+   webview reports a 0 safe-area. */
+html.cap-native {
+  --top-inset: max(env(safe-area-inset-top, 0px), 2.75rem);
 }
 
 html.dark {
