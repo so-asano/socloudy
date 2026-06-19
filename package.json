@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.4.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/react": "^19.0.2",
