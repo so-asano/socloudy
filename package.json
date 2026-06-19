@@ -6,12 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:app": "CAPACITOR=true vite build",
+    "cap:sync": "bun run build:app && cap sync",
     "preview": "vite preview",
     "lint": "biome check .",
     "format": "biome format --write ."
   },
   "dependencies": {
     "@atproto/api": "^0.20.16",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/ios": "^8.4.0",
     "@tanstack/react-query": "^5.62.7",
     "hls.js": "^1.6.16",
     "i18next": "^26.3.1",
@@ -25,6 +29,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@capacitor/cli": "^8.4.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
