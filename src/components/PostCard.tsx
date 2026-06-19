@@ -132,18 +132,20 @@ export function PostCard({
           <Link to={`/profile/${author.handle}`} className="relative z-10 shrink-0">
             <Avatar src={author.avatar} alt={author.handle} />
           </Link>
-          <div className="flex min-w-0 flex-1 items-baseline gap-1 text-sm">
+          <div className="min-w-0 flex-1 text-sm leading-tight">
             <Link
               to={`/profile/${author.handle}`}
-              className="relative z-10 truncate font-semibold hover:underline"
+              className="relative z-10 block truncate font-semibold hover:underline"
             >
               {author.displayName ?? author.handle}
             </Link>
-            <span className="truncate text-zinc-500">@{author.handle}</span>
-            <span className="text-zinc-400">·</span>
-            <span className="shrink-0 text-zinc-500">
-              {timeAgo(record.createdAt, i18n.resolvedLanguage ?? "en")}
-            </span>
+            <div className="mt-0.5 flex items-baseline gap-1 text-zinc-500">
+              <span className="truncate">@{author.handle}</span>
+              <span className="text-zinc-400">·</span>
+              <span className="shrink-0">
+                {timeAgo(record.createdAt, i18n.resolvedLanguage ?? "en")}
+              </span>
+            </div>
           </div>
         </div>
 
