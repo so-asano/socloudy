@@ -184,7 +184,7 @@ export function Layout() {
             onClick={() => setFeedsOpen(false)}
             className="fixed inset-0 z-40 sm:hidden"
           />
-          <div className="fixed inset-x-3 bottom-20 z-40 max-h-[55vh] overflow-y-auto rounded-3xl border border-white/30 bg-sky/90 p-2 shadow-xl backdrop-blur-xl sm:hidden">
+          <div className="fixed inset-x-3 bottom-[calc(5rem_+_env(safe-area-inset-bottom,0px))] z-40 max-h-[55vh] overflow-y-auto rounded-3xl border border-white/30 bg-sky/90 p-2 shadow-xl backdrop-blur-xl sm:hidden">
             {feeds.map((f) =>
               f.type === "timeline" ? (
                 <Fragment key={f.key}>
@@ -236,7 +236,7 @@ export function Layout() {
             onClick={() => setSettingsOpen(false)}
             className="fixed inset-0 z-40 sm:hidden"
           />
-          <div className="fixed top-20 right-3 z-40 flex items-center gap-2 rounded-3xl border border-white/30 bg-sky/90 p-3 shadow-xl backdrop-blur-xl sm:hidden">
+          <div className="fixed top-[calc(5rem_+_env(safe-area-inset-top,0px))] right-3 z-40 flex items-center gap-2 rounded-3xl border border-white/30 bg-sky/90 p-3 shadow-xl backdrop-blur-xl sm:hidden">
             <SettingsControls />
             <button
               type="button"
@@ -262,7 +262,7 @@ export function Layout() {
           setSettingsOpen((v) => !v);
         }}
         aria-label={t("nav.settings")}
-        className={`fixed top-4 right-4 z-50 grid size-12 place-items-center rounded-full bg-sky text-white shadow-lg shadow-sky/40 transition active:scale-95 sm:hidden ${
+        className={`fixed top-[calc(1rem_+_env(safe-area-inset-top,0px))] right-4 z-50 grid size-12 place-items-center rounded-full bg-sky text-white shadow-lg shadow-sky/40 transition active:scale-95 sm:hidden ${
           settingsOpen ? "ring-2 ring-white" : ""
         }`}
       >
@@ -275,14 +275,14 @@ export function Layout() {
           type="button"
           onClick={() => setComposer({ open: true })}
           aria-label={t("nav.post")}
-          className="fixed right-4 bottom-20 z-40 grid size-14 place-items-center rounded-full bg-sky text-white shadow-lg shadow-sky/40 transition active:scale-95 sm:hidden"
+          className="fixed right-4 bottom-[calc(5rem_+_env(safe-area-inset-bottom,0px))] z-40 grid size-14 place-items-center rounded-full bg-sky text-white shadow-lg shadow-sky/40 transition active:scale-95 sm:hidden"
         >
           <PenSquare className="size-6" />
         </button>
       )}
 
       {/* Mobile bottom bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t bg-sky-dark/30 py-3.5 backdrop-blur-xl sm:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-white/30 border-t bg-sky-dark/30 pt-3.5 pb-[calc(0.875rem_+_env(safe-area-inset-bottom,0px))] backdrop-blur-xl sm:hidden">
         <MobileLink
           to="/"
           end

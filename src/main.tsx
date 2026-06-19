@@ -3,12 +3,14 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import "@/i18n";
+import { initNative } from "@/lib/native";
 import { queryClient } from "@/lib/queryClient";
 import { initTheme } from "@/lib/theme";
 import { router } from "@/router";
 import "@/index.css";
 
 initTheme();
+initNative();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
