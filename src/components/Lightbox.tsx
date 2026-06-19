@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 /** Fullscreen image viewer. Click outside / Escape to close; arrows to navigate. */
 export function Lightbox() {
   const [state, setState] = useAtom(lightboxAtom);
+  const swipeStart = useRef<number | null>(null);
 
   useEffect(() => {
     if (!state) return;
@@ -42,7 +43,6 @@ export function Lightbox() {
   };
 
   // horizontal swipe on the image navigates between images
-  const swipeStart = useRef<number | null>(null);
   const onTouchStart = (e: React.TouchEvent) => {
     swipeStart.current = e.touches[0]?.clientX ?? null;
   };
