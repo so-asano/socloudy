@@ -3,8 +3,9 @@ import { SettingsControls } from "@/components/SettingsControls";
 import { Spinner } from "@/components/Spinner";
 import { getService, switchService } from "@/lib/agent";
 import { useAuthActions } from "@/lib/auth";
+import { Capacitor } from "@capacitor/core";
 import { useAtomValue } from "jotai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, useLocation } from "react-router-dom";
 
@@ -19,6 +20,22 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  // native: lift the centered form above the on-screen keyboard
+  const [kbHeight, setKbHeight] = useState(0);
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    const handles: { remove: () => void }[] = [];
+    import("@capacitor/keyboard").then(({ Keyboard }) => {
+      Keyboard.addListener("keyboardWillShow", (e) => setKbHeight(e.keyboardHeight)).then((h) =>
+        handles.push(h),
+      );
+      Keyboard.addListener("keyboardWillHide", () => setKbHeight(0)).then((h) => handles.push(h));
+    });
+    return () => {
+      for (const h of handles) h.remove();
+    };
+  }, []);
 
   if (authed) {
     const from = (location.state as { from?: string } | null)?.from ?? "/";
@@ -39,7 +56,10 @@ export function LoginPage() {
   };
 
   return (
-    <div className="grid min-h-dvh place-items-center px-4 pb-4 pt-[calc(1rem_+_var(--top-inset))]">
+    <div
+      className="grid min-h-dvh place-items-center px-4 pb-4 pt-[calc(1rem_+_var(--top-inset))] transition-[padding] duration-200"
+      style={kbHeight ? { paddingBottom: kbHeight } : undefined}
+    >
       <div className="absolute top-[calc(1rem_+_var(--top-inset))] right-4">
         <SettingsControls />
       </div>
