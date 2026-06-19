@@ -5,7 +5,7 @@ import { CloudShape } from "@/components/CloudShape";
 import { Spinner } from "@/components/Spinner";
 import { useCreatePost } from "@/lib/queries";
 import { useAtom, useAtomValue } from "jotai";
-import { Image as ImageIcon, Languages, X } from "lucide-react";
+import { ChevronDown, Image as ImageIcon, Languages, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -37,6 +37,7 @@ export function Composer() {
   const [error, setError] = useState<string | null>(null);
   // default the post language to the current UI language
   const [lang, setLang] = useState(() => i18n.resolvedLanguage ?? "en");
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const open = state.open;
@@ -46,6 +47,7 @@ export function Composer() {
     setText("");
     setError(null);
     setLang(i18n.resolvedLanguage ?? "en");
+    setLangMenuOpen(false);
     setImages((prev) => {
       for (const img of prev) URL.revokeObjectURL(img.url);
       return [];
@@ -224,22 +226,48 @@ export function Composer() {
               >
                 <ImageIcon className="size-5" />
               </button>
-              <label className="flex items-center gap-1 rounded-full px-2 py-1 text-sky transition hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                <Languages className="size-5 shrink-0" />
-                <span className="sr-only">{t("post.language")}</span>
-                <select
-                  value={lang}
-                  onChange={(e) => setLang(e.target.value)}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setLangMenuOpen((v) => !v)}
                   aria-label={t("post.language")}
-                  className="cursor-pointer bg-transparent text-sm outline-none"
+                  aria-haspopup="listbox"
+                  aria-expanded={langMenuOpen}
+                  className="flex items-center gap-1 rounded-full px-2 py-1 text-sky text-sm transition hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
-                  {POST_LANGUAGES.map((l) => (
-                    <option key={l.code} value={l.code} className="text-zinc-900">
-                      {l.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                  <Languages className="size-5 shrink-0" />
+                  {POST_LANGUAGES.find((l) => l.code === lang)?.label ?? lang}
+                  <ChevronDown className="size-4 shrink-0" />
+                </button>
+                {langMenuOpen ? (
+                  <>
+                    <button
+                      type="button"
+                      aria-label={t("common.close")}
+                      onClick={() => setLangMenuOpen(false)}
+                      className="fixed inset-0 z-10 cursor-default"
+                    />
+                    <ul className="absolute bottom-full left-0 z-20 mb-2 max-h-60 w-36 overflow-y-auto rounded-2xl border border-black/10 bg-white py-1 text-zinc-900 shadow-xl dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-100">
+                      {POST_LANGUAGES.map((l) => (
+                        <li key={l.code}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLang(l.code);
+                              setLangMenuOpen(false);
+                            }}
+                            className={`flex w-full items-center px-3 py-1.5 text-sm transition hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+                              l.code === lang ? "font-semibold text-sky" : ""
+                            }`}
+                          >
+                            {l.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </div>
               {error ? <span className="text-red-500 text-sm">{error}</span> : null}
             </div>
             <span
