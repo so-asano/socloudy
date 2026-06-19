@@ -1,12 +1,14 @@
 import { Layout } from "@/components/Layout";
 import { RequireAuth } from "@/components/RequireAuth";
 import { RootBoot } from "@/components/RootBoot";
+import { RouteError } from "@/components/RouteError";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
 // Route components are code-split: each page lands in its own chunk, loaded on navigation.
 export const router = createBrowserRouter([
   {
     element: <RootBoot />,
+    errorElement: <RouteError />,
     children: [
       {
         path: "/login",
