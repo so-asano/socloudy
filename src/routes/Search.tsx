@@ -23,6 +23,16 @@ export function SearchPage() {
 
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = query;
   const sentinel = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // dismiss the keyboard once the user scrolls into the results
+  useEffect(() => {
+    const onScroll = () => {
+      if (document.activeElement === inputRef.current) inputRef.current?.blur();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const el = sentinel.current;
@@ -47,10 +57,15 @@ export function SearchPage() {
           <CloudShape seed={777} />
           <div className="relative z-10">
             <input
+              ref={inputRef}
               type="search"
               autoFocus
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") inputRef.current?.blur();
+              }}
+              enterKeyHint="search"
               placeholder={t("search.placeholder")}
               className="w-full bg-transparent text-center text-[15px] outline-none placeholder:text-zinc-400"
             />
