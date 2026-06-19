@@ -326,7 +326,7 @@ export function Layout() {
 function Badge({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <span className="-top-1.5 -right-2 absolute grid h-[18px] min-w-[18px] place-items-center rounded-full bg-white px-1 font-bold text-[10px] text-sky-dark shadow-sm ring-2 ring-sky">
+    <span className="-top-1 -right-2 absolute grid h-4 min-w-4 place-items-center rounded-full bg-white px-1 font-bold text-[10px] text-sky-dark shadow-sm">
       {count > 99 ? "99+" : count}
     </span>
   );
@@ -400,8 +400,10 @@ function MobileLink({
         }`
       }
     >
-      <Icon className="size-6" />
-      <Badge count={badge} />
+      <span className="relative">
+        <Icon className="size-6" />
+        <Badge count={badge} />
+      </span>
     </NavLink>
   );
 }
