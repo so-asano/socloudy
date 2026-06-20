@@ -23,6 +23,7 @@ export function useTimeline() {
       return res.data as FeedPage;
     },
     getNextPageParam: (last) => last.cursor,
+    maxPages: 6,
   });
 }
 
@@ -52,6 +53,7 @@ export function useFeedPosts(feed: string) {
       return res.data as FeedPage;
     },
     getNextPageParam: (last) => last.cursor,
+    maxPages: 6,
     enabled: !!feed,
   });
 }
@@ -66,6 +68,7 @@ export function useBookmarks() {
       return res.data;
     },
     getNextPageParam: (last) => last.cursor,
+    maxPages: 6,
   });
 }
 
@@ -156,6 +159,7 @@ export function useAuthorFeed(actor: string) {
       return res.data as FeedPage;
     },
     getNextPageParam: (last) => last.cursor,
+    maxPages: 6,
     enabled: !!actor,
   });
 }
@@ -561,6 +565,7 @@ export function useSearchActors(q: string) {
       return res.data;
     },
     getNextPageParam: (last) => last.cursor,
+    maxPages: 6,
     enabled: q.trim().length > 0,
   });
 }
@@ -574,6 +579,7 @@ export function useNotifications() {
       return res.data;
     },
     getNextPageParam: (last) => last.cursor,
+    maxPages: 6,
   });
 }
 
