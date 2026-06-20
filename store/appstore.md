@@ -11,8 +11,9 @@ socloudy
 - EN: `A lightweight, cute, quirky Bluesky client — your timeline as fluffy clouds drifting across a blue sky.`
 - JA: `軽量でかわいい、ちょっと風変わりな Bluesky クライアント。タイムラインを青空に浮かぶ雲のカードで。`
 
-## Keywords (≤100 chars, comma-separated)
-`bluesky,atproto,sns,social,bluesky client,timeline,雲,クライアント,ブルースカイ`
+## Keywords (≤100 chars, comma-separated, per locale)
+- EN: `bluesky,atproto,social,sns,bluesky client,timeline,feeds,microblog,cloud`
+- JA: `ブルースカイ,bluesky,atproto,SNS,クライアント,雲,タイムライン,フィード`
 
 ## Description
 
