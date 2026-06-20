@@ -47,5 +47,5 @@ https://socloudy.app
   1. Sign in with your Bluesky account
   2. Cute, cloudy design
   3. Dark mode
-- A privacy policy URL is required (host one on socloudy.app).
+- Privacy Policy URL: https://socloudy.app/privacy.html
 - UGC apps (Guideline 1.2) need report / block / mute + an EULA before review.
