@@ -58,6 +58,10 @@ socloudy（ソークラウディ）は、軽量でかわいい、ちょっと風
 socloudy は Bluesky（AT Protocol）の独立したサードパーティ製クライアントであり、
 Bluesky 公式とは関係ありません。
 
+## Copyright (App Store Connect field)
+`2026 So Asano`
+(App Store displays it as "© 2026 So Asano".)
+
 ## Support / Marketing URL
 https://socloudy.app
 
