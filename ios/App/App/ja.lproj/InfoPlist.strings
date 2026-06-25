@@ -1,0 +1,2 @@
+"NSPhotoLibraryUsageDescription" = "投稿する画像を選ぶために写真へのアクセスを許可してください。";
+"NSCameraUsageDescription" = "投稿する写真を撮影するためにカメラへのアクセスを許可してください。";
